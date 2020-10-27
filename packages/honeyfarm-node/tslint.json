@@ -1,8 +1,0 @@
-{
-    "extends": "@zigbang/config/tslint.base.json",
-    "rules": {
-        "no-unused-variable": false,
-        "no-use-before-declare": false,
-        "no-dynamic-delete": false
-    }
-}

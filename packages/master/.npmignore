@@ -1,0 +1,8 @@
+.git
+.DS_Store
+node_modules/
+nodemon-dev.json
+tslint.json
+yarn.lock
+yarn*
+src/
