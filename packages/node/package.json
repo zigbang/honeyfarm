@@ -1,8 +1,9 @@
 {
   "name": "@zigbang/honeyfarm-node",
-  "version": "0.0.1",
-  "main": "index.js",
-  "license": "MIT",
+  "version": "0.0.2",
+  "bin": {
+    "honeyfarm-node": "bin/honeyfarm-node.js"
+  },
   "scripts": {
     "dev": "nodemon --config nodemon-dev.json",
     "build": "tsc --project .",

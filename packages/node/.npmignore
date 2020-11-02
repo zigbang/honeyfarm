@@ -1,0 +1,8 @@
+.git
+.DS_Store
+src/
+node_modules/
+chromedriverDir/
+nodemon-dev.json
+tslint.json
+yarn.lock

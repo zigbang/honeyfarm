@@ -3,9 +3,6 @@ import cp from "child_process"
 
 import Logger from "./logger"
 import API from "./api"
-import chromium from "../config/chromiumDriver.json"
-import fs from "fs"
-import logger from "./logger"
 import iosDevice from 'node-ios-device'
 import commander from "commander"
 
@@ -64,12 +61,10 @@ const iPhone_TYPE = {
 export class node {
 	private api: API
 	private resources: { [serialNo: string]: ResourceType } = {}
-	private maxDevices = Number(process.env.MAX_DEVICE_COUNT)  || 16 // env 같은걸로 받아야 함
+	private maxDevices = 16
 	private portMap: {[port: string]: PortStatus}= {}
-	private useChromium = false
-	private preChromium = "http://ports.ubuntu.com/pool/universe/c/chromium-browser/"
 	private isMacMachine = false
-	private appiumDefaultPort = Number(process.env.START_PORT) || 4724
+	private appiumDefaultPort = 4724
 	private endpoint = "http://localhost:4723"
 	private readonly wdaDefaultPort = 8100
 	private readonly mjpegServerDefaultPort = 9100
@@ -80,12 +75,10 @@ export class node {
 			.option('--endpoint <endpoint>', 'Setting endpoint')
 			.option('--appiumPort <appiumPort>', 'Setting appium port')
 			.option('--maxDevices <maxDevices>', 'Setting max devices count')
-			.option('--useChromium <useChromium>', 'use chromium')
 			.action(() => {
 				this.endpoint = commander.endpoint || this.endpoint
 				this.appiumDefaultPort = commander.appiumPort || this.appiumDefaultPort
 				this.maxDevices = commander.maxDevices || this.maxDevices
-				this.useChromium = commander.useChromium || this.useChromium
 			})
 			.parse(process.argv)
 
@@ -231,8 +224,6 @@ export class node {
 					port,
 					webviewVersion
 				}
-
-				if (this.useChromium) await this.getChromiumDriver(serial)
 			}
 			
 			this.portMap[port] = "USED"
@@ -293,46 +284,6 @@ export class node {
 			cp.exec(`kill -9 ${appiumPID}`)
 		} catch (e) {
 			Logger.error(e)
-		}
-	}
-
-	private async getChromiumDriver(serial: string) {
-		const webviewVersion = this.resources[serial].webviewVersion
-		if (!webviewVersion) {
-			Logger.error("webview version이 존재하지 않습니다.")
-			return
-		} 
-		
-		console.log("getChromiumDriver make chromedriverDir", webviewVersion)
-		shell.mkdir("-p", `${process.cwd()}/chromedriverDir`)
-		const chromiumDriverExist = fs.existsSync(`${process.cwd()}/chromedriverDir/${webviewVersion}`)
-
-		console.log("getChromiumDriver chromiumDriverExist", chromiumDriverExist)
-		if(chromiumDriverExist) {
-			Logger.info("webview chromiumDriver가 존재합니다.")
-			return
-		}
-
-		const chromiumDriverPath = chromium[webviewVersion]
-
-		console.log("getChromiumDriver chromiumDriverPath", chromiumDriverPath, chromium, webviewVersion)
-
-		if(!chromiumDriverPath) {
-			Logger.error("webview chromiumDriverPath가 존재하지 않습니다.")
-			return
-		}
-
-		console.log("getChromiumDriver start make chromium", `${this.preChromium}${chromiumDriverPath}`)
-		try {
-			shell.exec(`wget ${this.preChromium}${chromiumDriverPath}`)
-			shell.mkdir("-p", `${process.cwd()}/chromedriverDir/${webviewVersion}_driver`)
-			shell.exec(`sudo dpkg -i --instdir=${process.cwd()}/chromedriverDir/${webviewVersion}_driver ${chromiumDriverPath}`)
-			shell.cp("-f", `${process.cwd()}/chromedriverDir/${webviewVersion}_driver/usr/lib/chromium-browser/chromedriver`, `${process.cwd()}/chromedriverDir/${webviewVersion}`)
-			shell.exec(`chmod 777 ${process.cwd()}/chromedriverDir/${webviewVersion}`)
-			shell.rm("-rf", `${process.cwd()}/${chromiumDriverPath}`)
-
-		} catch {
-			Logger.error("ChromiumDriver 추가를 실패했습니다.")
 		}
 	}
 }
