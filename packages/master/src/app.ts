@@ -37,4 +37,4 @@ async function bootstrap() {
 	return context
 }
 
-export const nextContextPromise = bootstrap() // bootstrap을 등록하기 위함 그냥 bootstrap도 될듯 
+bootstrap() // bootstrap을 등록하기 위함 그냥 bootstrap도 될듯 
