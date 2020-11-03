@@ -10,19 +10,9 @@ import express from "express"
 import { DevicesController } from "./modules/devices/controller"
 import { SessionController } from "./modules/session/controller"
 import SessionRouter from "./util/SessionRouter"
+import { ipfilter } from "./util/ipFilter"
 
 export const app = express()
-app.use(bodyParser.json({ limit: "100mb" }))
-app.use("/wd/hub/session/*/*", proxy((...args) => SessionRouter.router(...args), {
-	reqBodyEncoding: undefined,
-	proxyReqPathResolver: (...args) => SessionRouter.pathResolver(...args),
-	userResDecorator: (...args) => SessionRouter.userResDecorator(...args)
-}))
-app.get("/", (req, res) => {
-	res.send("Healty!")
-})
-
-const adapter = new ExpressAdapter(app)
 
 @Module({
 	imports: [],
@@ -32,9 +22,19 @@ const adapter = new ExpressAdapter(app)
 class AppModule { }
 
 async function bootstrap() {
+	const adapter = new ExpressAdapter(app)
 	const context = await NestFactory.create(AppModule, adapter)
+
+	context.use(bodyParser.json({ limit: "100mb" }))
+	context.use(ipfilter())
+	context.use("/wd/hub/session/*/*", proxy((...args) => SessionRouter.router(...args), {
+		reqBodyEncoding: undefined,
+		proxyReqPathResolver: (...args) => SessionRouter.pathResolver(...args),
+		userResDecorator: (...args) => SessionRouter.userResDecorator(...args)
+	}))
+
 	await context.init()
 	return context
 }
 
-bootstrap() // bootstrap을 등록하기 위함 그냥 bootstrap도 될듯 
+bootstrap()

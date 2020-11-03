@@ -1,18 +1,8 @@
 import { BadRequestException, Controller, Get, Post, Req, Res } from "@nestjs/common"
 import { Request, Response } from "express"
 
-import SessionRouter, { DeviceState } from "../../util/SessionRouter"
-
-interface Device {
-	port: string
-	platform: "android" | "ios"
-	version: string,
-	udid?: string,
-	name?: string,
-	wdaPort?: string,
-	mjpegServerPort?: string,
-	type?: "real" | "simulator" | "emulator"
-}
+import SessionRouter from "../../util/SessionRouter"
+import { DeviceState, Device } from "../../util/types"
 
 @Controller()
 export class DevicesController {

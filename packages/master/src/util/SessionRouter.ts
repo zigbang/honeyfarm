@@ -1,19 +1,7 @@
 import { NotFoundException } from "@nestjs/common"
 import { Request, Response } from "express"
 
-type DeviceStatus = "FREE" | "PENDING" | "RUNNING"
-
-//확정상의 문제를 고려할 필요함 nanosql2 - readme에 명시 필요
-export interface DeviceState {
-	name?: string,
-	platform: "android" | "ios",
-	version: string,
-	status: DeviceStatus,
-	udid?: string,
-	wdaPort?: string,
-	mjpegServerPort?: string,
-	type?: "real" | "simulator" | "emulator"
-}
+import { DeviceState, DeviceStatus } from "../util/types"
 
 const reqTimeout = 6 * 60 * 1000
 

@@ -1,63 +1,13 @@
 import shell from "shelljs"
 import cp from "child_process"
-
-import Logger from "./logger"
-import API from "./api"
 import iosDevice from 'node-ios-device'
 import commander from "commander"
 
-type PortStatus = "FREE" | "USED"
-type DeviceType = "real" | "simulator" | "emulator"
-interface IOSDeviceInfo  {
-	udid: string
-	name: string
-	productVersion: string
-	type?: DeviceType
-	productType?: string
-}
+import Logger from "./logger"
+import API from "./api"
+import { ResourceType, PortStatus, IOSDeviceInfo, iPhone_TYPE } from "./types"
 
-interface ResourceType {
-	platform: string
-	version: string
-	port: string
-	webviewVersion?: string
-	name?: string
-	wdaPort?: string
-	mjpegServerPort?: string
-	type?: DeviceType
-}
 
-const iPhone_TYPE = {
-	"iPhone5,1" : "iPhone 5",
-	"iPhone5,2" : "iPhone 5",
-	"iPhone5,3" : "iPhone 5C",
-	"iPhone5,4" : "iPhone 5C",
-	"iPhone6,1" : "iPhone 5S",
-	"iPhone6,2" : "iPhone 5S",
-	"iPhone7,1" : "iPhone 6 Plus",
-	"iPhone7,2" : "iPhone 6",
-	"iPhone8,1" : "iPhone 6s",
-	"iPhone8,2" : "iPhone 6s Plus",
-	"iPhone8,4" : "iPhone SE",
-	"iPhone9,1" : "iPhone 7",
-	"iPhone9,2" : "iPhone 7 Plus",
-	"iPhone9,3" : "iPhone 7",
-	"iPhone9,4" : "iPhone 7 Plus",
-	"iPhone10,1" : "iPhone 8",
-	"iPhone10,2" : "iPhone 8 Plus",
-	"iPhone10,3" : "iPhone X",
-	"iPhone10,4" : "iPhone 8",
-	"iPhone10,5" : "iPhone 8 Plus",
-	"iPhone10,6" : "iPhone X",
-	"iPhone11,2" : "iPhone XS",
-	"iPhone11,4" : "iPhone XS Max",
-	"iPhone11,6" : "iPhone XS Max",
-	"iPhone11,8" : "iPhone XR",
-	"iPhone12,1" : "iPhone 11",
-	"iPhone12,3" : "iPhone 11 Pro",
-	"iPhone12,5" : "iPhone 11 Pro Max",
-	"iPhone12,8" : "iPhone SE 2nd Gen"
-}
 export class node {
 	private api: API
 	private resources: { [serialNo: string]: ResourceType } = {}
@@ -66,8 +16,8 @@ export class node {
 	private isMacMachine = false
 	private appiumDefaultPort = 4724
 	private endpoint = "http://localhost:4723"
-	private readonly wdaDefaultPort = 8100
-	private readonly mjpegServerDefaultPort = 9100
+	private readonly wdaDefaultPort = 8101
+	private readonly mjpegServerDefaultPort = 9101
 	
 	async run () {
 		shell.config.silent = true

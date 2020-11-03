@@ -4,6 +4,11 @@
   "bin": {
     "honeyfarm-master": "bin/honeyfarm-master.js"
   },
+  "keywords": ["e2e", "appium", "wdio", "zigbang"],
+  "repository": "https://github.com/zigbang/honeyfarm",
+  "engines": {
+    "node" : ">= 12" 
+  },
   "scripts": {
     "dev": "nodemon --config nodemon-dev.json",
     "build": "tsc --project .",
@@ -28,6 +33,7 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "express-http-proxy": "^1.6.0",
+    "express-ipfilter-secured": "0.3.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.4"
   }

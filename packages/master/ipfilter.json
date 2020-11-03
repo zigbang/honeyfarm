@@ -1,0 +1,22 @@
+{
+    "options": {
+        "mode": "allow",
+        "log": false
+    },
+    "filters": [
+        {
+            "url": "*",
+            "desc": "Filter all",
+            "ips": [
+                "127.0.0.1",
+                "::1"
+            ],
+            "options": {
+                "allowedHeaders": [
+                    "X-Forwarded-For",
+                    "x-forwarded-for"
+                ]
+            }
+        }
+    ]
+}

@@ -4,6 +4,11 @@
   "bin": {
     "honeyfarm-node": "bin/honeyfarm-node.js"
   },
+  "keywords": ["e2e", "appium", "wdio", "zigbang"],
+  "repository": "https://github.com/zigbang/honeyfarm",
+  "engines": {
+    "node" : ">= 12" 
+  },
   "scripts": {
     "dev": "nodemon --config nodemon-dev.json",
     "build": "tsc --project .",
