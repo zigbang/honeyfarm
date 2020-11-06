@@ -5,7 +5,7 @@ import commander from "commander"
 
 import Logger from "./logger"
 import API from "./api"
-import { ResourceType, PortStatus, IOSDeviceInfo, iPhone_TYPE } from "./types"
+import { ResourceType, PortStatus, IOSDeviceInfo, iPhone_TYPE } from "./util/types"
 
 
 export class node {
