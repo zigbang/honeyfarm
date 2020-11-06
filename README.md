@@ -70,10 +70,14 @@ $ yarn dev
 # 배포 시,
 $ yarn build
 $ yarn start
+
+# npm install 시
+$ npm install @zigbang/honeyfarm-master
+$ npx honeyfarm-master로 실행
 ```
 
 2. #### HoneyFarm-Node 
-*Optional*: `--endpoint-url`, `--appiumPort`, `--maxDevices`, `--useChromium`
+*Optional*: `--endpoint-url`, `--appiumPort`, `--maxDevices`
 ```sh
 $ cd node
 
@@ -83,6 +87,10 @@ $ yarn dev
 # 배포 시,
 $ yarn build
 $ yarn start
+
+# npm install 시
+$ npm install @zigbang/honeyfarm-node
+$ npx honeyfarm-node로 실행
 ```
 
 3. #### Test-Runner
@@ -146,7 +154,8 @@ $ yarn test:ios
 - Test-Runner는 테스트 실행 시, 시작점이 되며 테스트 케이스 및 테스트하려는 기기의 정보들을 HoneyFarm-Master으로 전달합니다.
 - 테스트 실행을 위한 기기정보 세팅은 `./configs`에서 하실 수 있으며, 안드로이드와 iOS를 별도로 설정해주어야 합니다.
 	( * *iOS 시뮬레이터가 아닌 실제 기기 사용을 위해서는 추가적인 설정이 필요합니다. 자세한 사항은 [링크](http://appium.io/docs/en/drivers/ios-xcuitest-real-devices/)를 참고 바람*)
--  샘플 테스트는 `src/example_testcase.ts`에서 확인하실 수 있으며, 테스트 방법에 대한 더 구체적인 설명은 [Appium 사이트](http://appium.io/docs/en/commands/status/)를 확인해주세요.
+- 샘플 테스트는 `src/example_testcase.ts`에서 확인하실 수 있으며, 테스트 방법에 대한 더 구체적인 설명은 [Appium 사이트](http://appium.io/docs/en/commands/status/)를 확인해주세요.
+- 해당 샘플은 `mac catalina 10.15.5`, `node 12`, `appium 1.18.1`에서 실행 했습니다.
 
 <br/>
 
