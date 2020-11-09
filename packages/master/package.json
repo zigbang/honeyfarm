@@ -7,7 +7,7 @@
   "keywords": ["e2e", "appium", "wdio", "zigbang"],
   "repository": "https://github.com/zigbang/honeyfarm",
   "engines": {
-    "node" : ">= 12" 
+    "node" : ">= 10" 
   },
   "scripts": {
     "dev": "nodemon --config nodemon-dev.json",

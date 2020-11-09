@@ -4,6 +4,7 @@ import { Request, Response } from "express"
 
 import SessionRouter from "../../util/SessionRouter"
 import { DesiredCapabilities} from "../../util/types"
+import { Queue } from "../../util/queue"
 
 @Controller()
 export class SessionController {

@@ -23,12 +23,10 @@ export class node {
 		shell.config.silent = true
 		commander
 			.option('--endpoint <endpoint>', 'Setting endpoint')
-			.option('--appiumPort <appiumPort>', 'Setting appium port')
-			.option('--maxDevices <maxDevices>', 'Setting max devices count')
+			.option('--appiumBeginPort <appiumBeginPort>', 'Setting appium Begin port')
 			.action(() => {
 				this.endpoint = commander.endpoint || this.endpoint
 				this.appiumDefaultPort = commander.appiumPort || this.appiumDefaultPort
-				this.maxDevices = commander.maxDevices || this.maxDevices
 			})
 			.parse(process.argv)
 
