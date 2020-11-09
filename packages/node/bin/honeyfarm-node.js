@@ -1,2 +1,3 @@
 #!/usr/bin/env node
-require("../dist/app.js")
+require('ts-node').register()
+require("../src/app.ts")

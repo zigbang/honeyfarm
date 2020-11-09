@@ -1,2 +1,4 @@
 #!/usr/bin/env node
-require("../dist/local.js")
+
+require('ts-node').register()
+require("../src/local.ts")

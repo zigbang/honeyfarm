@@ -4,10 +4,15 @@
   "bin": {
     "honeyfarm-master": "bin/honeyfarm-master.js"
   },
-  "keywords": ["e2e", "appium", "wdio", "zigbang"],
+  "keywords": [
+    "e2e",
+    "appium",
+    "wdio",
+    "zigbang"
+  ],
   "repository": "https://github.com/zigbang/honeyfarm",
   "engines": {
-    "node" : ">= 10" 
+    "node": ">= 10"
   },
   "scripts": {
     "dev": "nodemon --config nodemon-dev.json",
@@ -21,7 +26,6 @@
     "@types/express-http-proxy": "^1.5.12",
     "@types/tldjs": "^2.3.0",
     "nodemon": "^2.0.2",
-    "ts-node": "^8.6.2",
     "tslint": "^6.0.0",
     "typescript": "^3.7.5"
   },
@@ -35,6 +39,7 @@
     "express-http-proxy": "^1.6.0",
     "express-ipfilter-secured": "0.3.3",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^6.5.4"
+    "rxjs": "^6.5.4",
+    "ts-node": "^8.6.2"
   }
 }

@@ -1,6 +1,5 @@
 .git
 .DS_Store
-src/
 node_modules/
 nodemon-dev.json
 tslint.json
