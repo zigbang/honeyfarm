@@ -10,7 +10,8 @@
     "node" : ">= 12" 
   },
   "scripts": {
-    "dev": "nodemon --config nodemon-dev.json",
+    "dev" : "npx ts-node src/script.ts",
+    "nodemon": "nodemon --config ../nodemon-dev.json",
     "build": "tsc --project .",
     "start": "node ./dist/src/app.js",
     "lint": "tslint --project ."
