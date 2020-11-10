@@ -32,7 +32,7 @@ $ honeyfarm-master
 ```
 or
 ```sh
-$ npx honeyfarm-master
+$ npx @zigbang/honeyfarm-master honeyfarm-master
 ```
 자세한 내용 [HoneyFarm-Master README](./packages/master/README.md)를 참고하시기 바랍니다.
 
@@ -48,6 +48,6 @@ $ npx honeyfarm-node
 ```
 or
 ```sh
-$ npx honeyfarm-node
+$ npx @zigbang/honeyfarm-node honeyfarm-node
 ```
 자세한 내용 [HoneyFarm-Node README](./packages/node/README.md)를 참고하시기 바랍니다.
