@@ -3,7 +3,7 @@ import { NestFactory } from "@nestjs/core"
 import { ExpressAdapter } from "@nestjs/platform-express"
 import * as bodyParser from "body-parser"
 import proxy from "express-http-proxy"
-
+import ejs from "ejs"
 // tslint:disable-next-line:  match-default-export-name
 import express from "express"
 
@@ -24,7 +24,9 @@ class AppModule { }
 async function bootstrap() {
 	const adapter = new ExpressAdapter(app)
 	const context = await NestFactory.create(AppModule, adapter)
-
+	app.set("views", __dirname)
+	app.set("view engine", "ejs")
+	app.engine("html", ejs.renderFile)
 	context.use(bodyParser.json({ limit: "100mb" }))
 	context.use(ipfilter())
 	context.use("/wd/hub/session/*/*", proxy((...args) => SessionRouter.router(...args), {
@@ -32,6 +34,8 @@ async function bootstrap() {
 		proxyReqPathResolver: (...args) => SessionRouter.pathResolver(...args),
 		userResDecorator: (...args) => SessionRouter.userResDecorator(...args)
 	}))
+
+
 
 	await context.init()
 	return context

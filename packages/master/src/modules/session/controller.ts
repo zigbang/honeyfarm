@@ -1,7 +1,7 @@
 import { Controller, Delete, NotFoundException, Param, Post, Req, Res, Get } from "@nestjs/common"
 import Axios from "axios"
 import { Request, Response } from "express"
-
+import { main } from "../../dashboard"
 import SessionRouter from "../../util/SessionRouter"
 import { DesiredCapabilities} from "../../util/types"
 
@@ -132,6 +132,12 @@ export class SessionController {
 	@Get("/")
 	async getStatus(@Req() req: Request, @Res() res: Response) {
 		res.send("Healty!!!!")
+	}
+
+	@Get("/dashboard")
+	async getDashboard(@Req() req: Request, @Res() res: Response) {
+		const result = await main()
+		res.render("dashboard.html")
 	}
 }
 
