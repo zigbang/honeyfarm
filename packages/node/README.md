@@ -1,5 +1,8 @@
-# HoneyFarm-Node
+# HoneyFarm Node
+
+
 ## options
+
 | options | description | default |
 |:---|:---|:---|
 | --endpoint-url | honeyfarm-master endpoint|`localhost:4723`|

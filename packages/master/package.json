@@ -15,10 +15,10 @@
     "node": ">= 10"
   },
   "scripts": {
-    "dev": "nodemon --config nodemon-dev.json",
-    "build": "tsc --project .",
+    "dev": "npx nodemon --config nodemon-dev.json",
+    "build": "npx tsc",
     "start": "node ./dist/local.js",
-    "lint": "tslint --project ."
+    "lint": "npx tslint"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.1",
