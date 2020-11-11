@@ -10,7 +10,6 @@ export interface DesiredCapabilities {
 	mjpegServerPort: string
 }
 
-
 export interface Device {
 	port?: string
 	platform: "android" | "ios"

@@ -1,18 +1,23 @@
 {
   "name": "@zigbang/honeyfarm-node",
-  "version": "0.0.2",
+  "version": "0.0.11",
   "bin": {
-    "honeyfarm-node": "bin/honeyfarm-node.js"
+    "honeyfarm-node": "bin/run"
   },
-  "keywords": ["e2e", "appium", "wdio", "zigbang"],
+  "keywords": [
+    "e2e",
+    "appium",
+    "wdio",
+    "zigbang"
+  ],
   "repository": "https://github.com/zigbang/honeyfarm",
   "engines": {
-    "node" : ">= 12" 
+    "node": ">= 10"
   },
   "scripts": {
     "dev" : "npx ts-node src/script.ts",
-    "nodemon": "nodemon --config ../nodemon-dev.json",
-    "build": "tsc --project .",
+    "nodemon": "npx nodemon --config nodemon-dev.json",
+    "build": "npx tsc",
     "start": "node ./dist/src/app.js",
     "lint": "tslint --project ."
   },
@@ -20,9 +25,9 @@
     "@types/shelljs": "^0.8.3",
     "@types/commander": "^2.12.1",
     "nodemon": "^2.0.2",
-    "ts-node": "^8.6.2",
     "tslint": "^5.20.1",
-    "typescript": "3.7.5"
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.5"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -30,5 +35,9 @@
     "shelljs": "^0.8.3",
     "winston": "^3.2.1",
     "commander": "5.1.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   }
 }
