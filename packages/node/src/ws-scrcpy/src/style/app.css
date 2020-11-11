@@ -1,6 +1,6 @@
 :root {
-    --main-bg-color: hsl(0, 0%, 100%);
-    --stream-bg-color: hsl(0, 0%, 85%);
+    --main-bg-color: rgb(248, 248, 248);
+    --stream-bg-color: rgb(248, 248, 248);
     --shell-bg-color: hsl(0, 0%, 0%);
     --row-bg-color_hover: hsl(218, 67%, 95%);
     --table-header-bg-color: hsl(0, 0%, 95%);
@@ -15,10 +15,10 @@
     --kill-button-hover-color: hsl(342, 100%, 37%);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: white) {
     :root {
         --main-bg-color: hsl(0, 0%, 14%);
-        --stream-bg-color: hsl(0, 0%, 20%);
+        --stream-bg-color: rgb(248, 248, 248);
         --shell-bg-color: hsl(0, 0%, 0%);
         --row-bg-color_hover: hsl(218, 17%, 18%);
         --table-header-bg-color: hsl(0, 0%, 20%);
