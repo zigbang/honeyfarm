@@ -12,8 +12,8 @@ export async function html_editor() {
     // const req = await Axios.get(`http://honey.zigbang.io/devices`)
     // const data = req.data as { [key: string]: { platform: string, version: string, status: string, udid: string}}
     const data = SessionRouter.lsResource() as { [key: string]: { platform: string, version: string, status: string, udid: string}}
-    // const node_address = {ip: "192.168.99.37", port: "8000"}
-    const node_address = {ip: "localhost", port: "8000"}
+    const node_address = {ip: "192.168.99.37", port: "8000"}
+    // const node_address = {ip: "localhost", port: "8000"}
     let $ = cheerio.load(fs.readFileSync(htmlPath, { encoding: "utf8" }))
     Object.entries(data).filter(([key, value]) => {
         if(value.platform === "android") {
