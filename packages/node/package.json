@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "npx nodemon --config nodemon-dev.json",
     "build": "npx tsc",
-    "start": "node ./dist/src/app.js",
+    "start": "node ./dist/app.js",
     "lint": "tslint --project ."
   },
   "devDependencies": {
