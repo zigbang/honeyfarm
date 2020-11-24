@@ -35,8 +35,6 @@ async function bootstrap() {
 		userResDecorator: (...args) => SessionRouter.userResDecorator(...args)
 	}))
 
-
-
 	await context.init()
 	return context
 }
