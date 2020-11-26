@@ -17,5 +17,5 @@
 		"target": "es5",
 		"resolveJsonModule": true,
 	},
-	"exclude": ["./bin", "./dist"]
+	"exclude": ["./bin", "./dist", "./src/lib", "./src/ws-scrcpy"]
 }
