@@ -3,7 +3,7 @@ import { Request, Response } from "express"
 
 import SessionRouter from "../../util/SessionRouter"
 import { DeviceState, Device } from "../../util/types"
-
+import { getSheet } from "../../util/spreadsheet"
 @Controller()
 export class DevicesController {
 	@Post("/register")
@@ -20,7 +20,7 @@ export class DevicesController {
 			version: body.version,
 			status: "FREE",
 			udid: body.udid,
-			name: body.name,
+			name: body.name ? body.name : await this.getDeviceName(body.udid),
 			wdaPort: body.wdaPort,
 			mjpegServerPort: body.mjpegServerPort,
 			type: body.type
@@ -62,4 +62,20 @@ export class DevicesController {
 	private getClientAddr(req: Request) {
 		return req.headers["x-forwarded-for"] || req.connection.remoteAddress?.replace("::ffff:", "") || ""
 	}
+
+	private async getDeviceName(udid?: string) {
+		try {
+			const sheet = await getSheet()
+			if (sheet) {
+				const rows = await sheet.getRows()
+				const name = rows.filter(row => { return row.udid === udid })
+				return name && name.length > 0 && name[0].name
+			}
+		} catch (e) {
+			console.log("getDeviceName error", e)
+		
+		}
+
+		return udid
+	} 
 }

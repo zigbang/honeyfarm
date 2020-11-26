@@ -7,7 +7,6 @@ export class deploy {
         
         //ws build
         process.chdir("./src/ws-scrcpy")
-        console.log(shell.pwd())
         shell.exec("yarn dist")
         
         //copy ws dist
@@ -17,7 +16,8 @@ export class deploy {
 
         // npm publish
         process.chdir("../../")
-        console.log(shell.pwd())
+        shell.exec("npm publish")
+
     }
 }
 
