@@ -1,6 +1,6 @@
 {
   "name": "@zigbang/honeyfarm-master",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "bin": {
     "honeyfarm-master": "bin/run"
   },
@@ -19,7 +19,7 @@
     "build": "npx tsc && cp ./src/dashboard_template.html ./dist/dashboard_template.html",
     "start": "node ./dist/local.js",
     "lint": "npx tslint",
-    "deploy": "yarn build && npm publish" 
+    "deploy": "yarn build && npm publish"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.1",
@@ -41,11 +41,11 @@
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
-    "google-spreadsheet": "^3.0.11",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "express-http-proxy": "^1.6.0",
     "express-ipfilter-secured": "0.3.3",
+    "google-spreadsheet": "^3.0.11",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.4"
   },
