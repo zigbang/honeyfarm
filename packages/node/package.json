@@ -15,7 +15,7 @@
     "node": ">= 10"
   },
   "scripts": {
-    "dev" : "npx ts-node src/script.ts",
+    "dev" : "npx ts-node src/dev.ts",
     "nodemon": "npx nodemon --config nodemon-dev.json",
     "build": "npx tsc",
     "start": "node ./dist/app.js",
