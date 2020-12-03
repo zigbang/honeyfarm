@@ -63,6 +63,21 @@ export class DevicesController {
 		return SessionRouter.lsResource()
 	}
 
+	@Get("/testabledevices")
+	getTestableDevices() {
+		const devices = SessionRouter.lsResource()
+		if (devices) {
+			let testableDevices = {}
+			Object.entries<DeviceConfig>(devices)
+			.filter(([key, value])=> { return !value.onlyUseDashboard })
+			.map(([key, value]) => { testableDevices = {...testableDevices, ...devices[key]}})
+			
+			return testableDevices
+		} else {
+			return devices
+		}
+	}
+
 	private getClientAddr(req: Request) {
 		return req.headers["x-forwarded-for"] || req.connection.remoteAddress?.replace("::ffff:", "") || ""
 	}
@@ -72,7 +87,7 @@ export class DevicesController {
 			const deviceConfig = await FromJson()
 
 			if (deviceConfig) {
-				const value = Object.entries<DeviceConfig>(deviceConfig).filter(([key, value]) => {return key === udid}).map(([key, value]) => { return value })
+				const value = Object.entries<DeviceConfig>(deviceConfig).filter(([key, value]) => { return key === udid }).map(([key, value]) => { return value })
 
 				if (value && value.length > 0) {
 					return { name: value[0].name, onlyUseDashboard: value[0].onlyUseDashboard ?  value[0].onlyUseDashboard : false}
