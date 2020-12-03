@@ -4,7 +4,7 @@ import { Request, Response } from "express"
 import SessionRouter from "../../util/SessionRouter"
 import { DeviceState, Device } from "../../util/types"
 import { getSheet } from "../../util/spreadsheet"
-import { main } from "../../dashboard"
+
 @Controller()
 export class DevicesController {
 	@Post("/register")
@@ -58,13 +58,6 @@ export class DevicesController {
 	@Get("/devices")
 	getDevices() {
 		return SessionRouter.lsResource()
-	}
-
-
-	@Get("/dashboard")
-	async getDashboard(@Req() req: Request, @Res() res: Response) {
-		await main()
-		res.render("dashboard.html")
 	}
 
 	private getClientAddr(req: Request) {

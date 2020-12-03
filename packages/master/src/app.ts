@@ -9,6 +9,7 @@ import express from "express"
 
 import { DevicesController } from "./modules/devices/controller"
 import { SessionController } from "./modules/session/controller"
+import { DashboardController } from "./modules/dashboard/controller"
 import SessionRouter from "./util/SessionRouter"
 import { ipfilter } from "./util/ipFilter"
 
@@ -16,7 +17,7 @@ export const app = express()
 
 @Module({
 	imports: [],
-	controllers: [SessionController, DevicesController],
+	controllers: [SessionController, DevicesController, DashboardController],
 	providers: []
 })
 class AppModule { }

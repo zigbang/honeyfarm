@@ -16,7 +16,7 @@
   },
   "scripts": {
     "dev": "npx nodemon --config nodemon-dev.json",
-    "build": "npx tsc && cp ./src/dashboard_template.html ./dist/dashboard_template.html",
+    "build": "npx tsc && cp ./dashboard_template.html ./dist/dashboard_template.html",
     "start": "node ./dist/local.js",
     "lint": "npx tslint",
     "deploy": "yarn build && npm publish"
