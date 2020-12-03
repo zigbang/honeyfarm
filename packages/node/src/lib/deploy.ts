@@ -4,7 +4,7 @@ import fs from "fs"
 export class deploy {
     run() {
         const curruentPath = process.cwd()
-        console.log(curruentPath)
+
         //node build
         shell.exec("yarn build")
         
@@ -25,7 +25,7 @@ export class deploy {
 
         // npm publish
         process.chdir(curruentPath)
-        //shell.exec("npm publish")
+        shell.exec("npm publish")
 
     }
 }

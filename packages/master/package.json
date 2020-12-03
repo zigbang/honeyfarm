@@ -45,7 +45,6 @@
     "express": "^4.17.1",
     "express-http-proxy": "^1.6.0",
     "express-ipfilter-secured": "0.3.3",
-    "google-spreadsheet": "^3.0.11",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.4"
   },

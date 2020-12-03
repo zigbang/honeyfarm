@@ -2,8 +2,8 @@ import { BadRequestException, Controller, Get, Post, Req, Res } from "@nestjs/co
 import { Request, Response } from "express"
 
 import SessionRouter from "../../util/SessionRouter"
-import { DeviceState, Device } from "../../util/types"
-import { getSheet } from "../../util/spreadsheet"
+import { DeviceState, Device, DeviceConfig } from "../../util/types"
+import { FromJson } from "../../util/getDeviceConfig"
 
 @Controller()
 export class DevicesController {
@@ -16,15 +16,18 @@ export class DevicesController {
 		const clientAddr = this.getClientAddr(req)
 		const addr = `${clientAddr}:${body.port}`
 
+		const deviceConfig: DeviceConfig = await this.getDeviceConfig(body.udid)
+
 		const deviceResource: DeviceState = {
 			platform: body.platform,
 			version: body.version,
 			status: "FREE",
 			udid: body.udid,
-			name: body.name ? body.name : await this.getDeviceName(body.udid),
+			name: body.name ? body.name : deviceConfig.name,
 			wdaPort: body.wdaPort,
 			mjpegServerPort: body.mjpegServerPort,
-			type: body.type
+			type: body.type,
+			onlyUseDashboard: deviceConfig.onlyUseDashboard
 		}
 
 		SessionRouter.updateDeviceResource(addr, deviceResource)
@@ -64,19 +67,23 @@ export class DevicesController {
 		return req.headers["x-forwarded-for"] || req.connection.remoteAddress?.replace("::ffff:", "") || ""
 	}
 
-	private async getDeviceName(udid?: string) {
+	private async getDeviceConfig(udid?: string) {
 		try {
-			const sheet = await getSheet()
-			if (sheet) {
-				const rows = await sheet.getRows()
-				const name = rows.filter(row => { return row.udid === udid })
-				return name && name.length > 0 && name[0].name
+			const deviceConfig = await FromJson()
+
+			if (deviceConfig) {
+				const value = Object.entries<DeviceConfig>(deviceConfig).filter(([key, value]) => {return key === udid}).map(([key, value]) => { return value })
+
+				if (value && value.length > 0) {
+					return { name: value[0].name, onlyUseDashboard: value[0].onlyUseDashboard ?  value[0].onlyUseDashboard : false}
+				}
 			}
+
 		} catch (e) {
-			console.log("getDeviceName error", e)
+			console.log("getDeviceConfig error", e)
 		
 		}
 
-		return udid
+		return { name: udid, onlyUseDashboard: false}
 	} 
 }
