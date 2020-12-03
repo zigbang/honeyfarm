@@ -11,11 +11,11 @@ export class DashboardController {
 	@Get("/dashboard")
 	async getDashboard(@Req() req: Request, @Res() res: Response) {
 		await this.makeDashboardHtml()
-		res.render(`${process.cwd()}/dashboard.html`)
+		res.render(`${__dirname}/dashboard.html`)
 	}
 
 	private async makeDashboardHtml() {
-		const htmlPath = `${process.cwd()}/dashboard_template.html`
+		const htmlPath = `${__dirname}/dashboard_template.html`
 		const data = SessionRouter.lsResource() as { [key: string]: DeviceState }
 		const wsPort = 8000
 	
@@ -35,6 +35,6 @@ export class DashboardController {
 			}
 		})
 
-		fs.writeFileSync(`${process.cwd()}/dashboard.html`, $.html())
+		fs.writeFileSync(`${__dirname}/dashboard.html`, $.html())
 	}
 }
