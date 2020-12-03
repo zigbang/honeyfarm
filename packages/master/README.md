@@ -6,19 +6,19 @@ HoneyFarm Node에 등록 되어 있는 안드로이드 단말을 웹페이지에
 ## CONFIG OPTIONS
 config.json file을 root에 추가해서 단말을 설정하기 위한 옵션
 
-### 구조
-```
-{
-    UDID : {
-        "name" : "Galaxy z Fold2", //device model name
-        "onlyUseDashboard": false //true 일경우 dashboard에서만 사용 할 단말로 구분
-    },
-    UDID2: {
-        "name" : "Galaxy Note20 Ultra",
-        "onlyUseDashboard": true
-    }
-}
-```  
+### DEVICES
+ ```
+    [ 
+        { "udid": "R3CN90NZ2SK", "name": "Galaxy z Fold2", "showInDashboard": true },
+        { "udid": "R3CN70DJEXV", "name": "Galaxy Note20 Ultra", "showInDashboard": false }
+    ] 
+``` 
+|  | description |
+|:---|:---|:---|:---|
+| udid | udid |
+| name | device model name |
+| showInDashboard | true일 경우 테스트용 단말이 아닌 dashboard에서만 사용 하는 단말로 정의 |
+
 ## API
 
 | path | description | example | body |
