@@ -63,11 +63,12 @@ export class DevicesController {
 		const devices = SessionRouter.lsResource()
 
 		if (devices && !req?.body?.all) {
-			let testableDevices = {}
+			const testableDevices: {[key: string]: {}} = {}
+
 			Object.entries<DeviceConfig>(devices)
-			.filter(([key, value])=> { return !value.showInDashboard })
-			.map(([key, value]) => { testableDevices = {...testableDevices, ...devices[key]}})
-			
+				.filter(([key, value])=> { return !value.showInDashboard })
+				.map(([key, value]) => { testableDevices[key] = value })
+
 			return testableDevices
 		} else {
 			return devices
