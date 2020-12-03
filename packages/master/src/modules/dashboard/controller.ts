@@ -20,6 +20,7 @@ export class DashboardController {
 		const wsPort = 8000
 	
 		const $ = cheerio.load(fs.readFileSync(htmlPath, { encoding: "utf8" }))
+
 		Object.entries(data).filter(([key, value]) => {
 			const nodeAddress = key.split(":")[0]
 			if(value.platform === "android" && nodeAddress) {

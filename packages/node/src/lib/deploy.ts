@@ -1,31 +1,32 @@
-import shell from "shelljs"
+import shelljs from "shelljs"
 import fs from "fs"
+import os from "os"
 
 export class deploy {
     run() {
         const curruentPath = process.cwd()
 
         //node build
-        shell.exec("yarn build")
+        shelljs.exec("yarn build")
         
         //ws build
-        process.chdir("../../../")
+        process.chdir(os.tmpdir())
 
         if (fs.existsSync("./ws-scrcpy/package.json")) {
-            shell.exec("cd ws-scrcpy && git pull")
+            shelljs.exec("cd ws-scrcpy && git pull")
         } else {
-            shell.exec("git clone https://github.com/NetrisTV/ws-scrcpy.git")
+            shelljs.exec("git clone https://github.com/NetrisTV/ws-scrcpy.git")
         }
-
-        shell.exec("cd ws-scrcpy && yarn && yarn dist")
+        
+        shelljs.exec("cd ws-scrcpy && yarn && yarn dist")
 
         //copy ws dist
-        shell.cp("-fr", "./ws-scrcpy/dist/public", `${curruentPath}/dist`)
-        shell.cp("-fr", "./ws-scrcpy/dist/server", `${curruentPath}/dist`)
+        shelljs.cp("-fr", "./ws-scrcpy/dist/public", `${curruentPath}/dist`)
+        shelljs.cp("-fr", "./ws-scrcpy/dist/server", `${curruentPath}/dist`)
 
         // npm publish
         process.chdir(curruentPath)
-        shell.exec("npm publish")
+        shelljs.exec("npm publish")
 
     }
 }

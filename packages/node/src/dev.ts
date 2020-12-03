@@ -1,17 +1,21 @@
 import cp from "child_process"
 import fs from "fs"
-import shell from "shelljs"
+import shelljs from "shelljs"
+import os from "os"
 
 export class dev {
     run() {
         cp.exec("yarn nodemon")
-        process.chdir("../../../")
+
+        process.chdir(os.tmpdir())
+
         if (fs.existsSync("./ws-scrcpy/package.json")) {
-            shell.exec("cd ws-scrcpy && git pull")
+            shelljs.exec("cd ws-scrcpy && git pull")
         } else {
-            shell.exec("git clone https://github.com/NetrisTV/ws-scrcpy.git")
+            shelljs.exec("git clone https://github.com/NetrisTV/ws-scrcpy.git")
         }
-        shell.exec("cd ws-scrcpy && yarn && yarn start")
+
+        shelljs.exec("cd ws-scrcpy && yarn && yarn start")
     }
 }
 

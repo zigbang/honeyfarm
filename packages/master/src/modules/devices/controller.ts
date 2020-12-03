@@ -3,7 +3,7 @@ import { Request, Response } from "express"
 
 import SessionRouter from "../../util/SessionRouter"
 import { DeviceState, Device, DeviceConfig } from "../../util/types"
-import { FromJson } from "../../util/getDeviceConfig"
+import { FromJson } from "../../util/getConfig"
 
 @Controller()
 export class DevicesController {
@@ -27,7 +27,7 @@ export class DevicesController {
 			wdaPort: body.wdaPort,
 			mjpegServerPort: body.mjpegServerPort,
 			type: body.type,
-			onlyUseDashboard: deviceConfig.onlyUseDashboard
+			showInDashboard: deviceConfig.showInDashboard
 		}
 
 		SessionRouter.updateDeviceResource(addr, deviceResource)
@@ -59,17 +59,13 @@ export class DevicesController {
 	}
 
 	@Get("/devices")
-	getDevices() {
-		return SessionRouter.lsResource()
-	}
-
-	@Get("/testabledevices")
-	getTestableDevices() {
+	getDevices(@Req() req: Request) {
 		const devices = SessionRouter.lsResource()
-		if (devices) {
+
+		if (devices && !req?.body?.all) {
 			let testableDevices = {}
 			Object.entries<DeviceConfig>(devices)
-			.filter(([key, value])=> { return !value.onlyUseDashboard })
+			.filter(([key, value])=> { return !value.showInDashboard })
 			.map(([key, value]) => { testableDevices = {...testableDevices, ...devices[key]}})
 			
 			return testableDevices
@@ -84,13 +80,15 @@ export class DevicesController {
 
 	private async getDeviceConfig(udid?: string) {
 		try {
-			const deviceConfig = await FromJson()
+			const config = await FromJson()
 
-			if (deviceConfig) {
-				const value = Object.entries<DeviceConfig>(deviceConfig).filter(([key, value]) => { return key === udid }).map(([key, value]) => { return value })
+			if (config && config["devices"]) {
+				const devices: DeviceConfig[] = config["devices"]
 
-				if (value && value.length > 0) {
-					return { name: value[0].name, onlyUseDashboard: value[0].onlyUseDashboard ?  value[0].onlyUseDashboard : false}
+				for (const device of devices) {
+					if (device.udid === udid) {
+						return { name: device.name, showInDashboard: device.showInDashboard ?  device.showInDashboard : false} 
+					}
 				}
 			}
 
@@ -99,6 +97,6 @@ export class DevicesController {
 		
 		}
 
-		return { name: udid, onlyUseDashboard: false}
+		return { name: udid, showInDashboard: false}
 	} 
 }

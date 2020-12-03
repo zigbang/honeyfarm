@@ -11,15 +11,15 @@ export interface DesiredCapabilities {
 }
 
 export interface DeviceConfig {
+	udid?: string,
 	name?: string,
-	onlyUseDashboard?: boolean
+	showInDashboard?: boolean
 }
 
 export interface Device extends DeviceConfig {
 	port?: string
 	platform: "android" | "ios"
 	version: string,
-	udid?: string,
 	wdaPort?: string,
 	mjpegServerPort?: string,
 	type?: "real" | "simulator" | "emulator"
