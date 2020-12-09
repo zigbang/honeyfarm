@@ -10,19 +10,21 @@ export interface DesiredCapabilities {
 	mjpegServerPort: string
 }
 
-export interface Device {
+export interface DeviceConfig {
+	udid?: string,
+	name?: string,
+	showInDashboard?: boolean
+}
+
+export interface Device extends DeviceConfig {
 	port?: string
 	platform: "android" | "ios"
 	version: string,
-	udid?: string,
-	name?: string,
 	wdaPort?: string,
 	mjpegServerPort?: string,
 	type?: "real" | "simulator" | "emulator"
 }
 
-
 export interface DeviceState extends Device {
 	status: DeviceStatus
 }
-

@@ -1,7 +1,6 @@
 import { Controller, Delete, NotFoundException, Param, Post, Req, Res, Get } from "@nestjs/common"
 import Axios from "axios"
 import { Request, Response } from "express"
-
 import SessionRouter from "../../util/SessionRouter"
 import { DesiredCapabilities} from "../../util/types"
 import { Queue } from "../../util/queue"

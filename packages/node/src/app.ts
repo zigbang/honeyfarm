@@ -1,4 +1,4 @@
-import shell from "shelljs"
+import shelljs from "shelljs"
 import cp from "child_process"
 import iosDevice from 'node-ios-device'
 import commander from "commander"
@@ -20,7 +20,7 @@ export class node {
 	private readonly mjpegServerDefaultPort = 9101
 	
 	async run () {
-		shell.config.silent = true
+		shelljs.config.silent = true
 		commander
 			.option('--endpoint <endpoint>', 'Setting endpoint')
 			.option('--appiumBeginPort <appiumBeginPort>', 'Setting appium Begin port')
@@ -62,7 +62,7 @@ export class node {
 			} else {
 				//테스트 중 appium server 죽는 이슈가 있는데 아직 정확한 원인을 알지 못해서 주기적으로 살리는 코드 추가
 				const resource = this.resources[key]
-				const checkAppiumServer = shell.exec(`lsof -i :${resource.port} -t`).stdout
+				const checkAppiumServer = shelljs.exec(`lsof -i :${resource.port} -t`).stdout
 
 				if (!checkAppiumServer) this.startAppiumServer(key, resource.port, resource.wdaPort)
 			}
@@ -98,7 +98,7 @@ export class node {
 			this.getOnlineSimulator().map((device: IOSDeviceInfo) => { serials[device.udid] = "ios" })
 		} 
 		
-		const devices = shell.exec("adb devices | grep -v devices").stdout
+		const devices = shelljs.exec("adb devices | grep -v devices").stdout
 		const onlineDevices = devices.match(/(\w+-?\w+?)\tdevice$/gm) || []
 
 		onlineDevices.map((device: string) => { serials[device.replace("\tdevice", "")] = "android" })
@@ -109,7 +109,7 @@ export class node {
 	private getOnlineSimulator(): IOSDeviceInfo[] {
 		const result :IOSDeviceInfo[] = []
 		
-		const data = shell.exec(`xcrun simctl list devices --json`)
+		const data = shelljs.exec(`xcrun simctl list devices --json`)
 		const deviceList = JSON.parse(data.toString()) as { devices: {} }
 		for (const [version, devices] of Object.entries(deviceList.devices)) {
 			if (!version.includes("iOS")) {
@@ -160,8 +160,8 @@ export class node {
 					type: deviceInfo[0].type
 				}
 			} else {
-				const platformVersion = shell.exec(`adb -s ${serial} shell getprop ro.build.version.release`).stdout.replace("\n", "").trim()
-				const webviewVersion = shell.exec(`adb -s ${serial}  shell dumpsys package com.android.chrome | grep versionName`)
+				const platformVersion = shelljs.exec(`adb -s ${serial} shell getprop ro.build.version.release`).stdout.replace("\n", "").trim()
+				const webviewVersion = shelljs.exec(`adb -s ${serial}  shell dumpsys package com.android.chrome | grep versionName`)
 				.stdout.split("\n")[0]
 				.replace("versionName=","")
 				.match(/\d+\.\d+\.\d+/)[0]
@@ -228,7 +228,7 @@ export class node {
 			delete this.resources[serial]
 			this.portMap[port] = "FREE"
 
-			const appiumPID = shell.exec(`lsof -n -i4TCP:${port} | grep node |  awk '{print $2}'`)
+			const appiumPID = shelljs.exec(`lsof -n -i4TCP:${port} | grep node |  awk '{print $2}'`)
 			cp.exec(`kill -9 ${appiumPID}`)
 		} catch (e) {
 			Logger.error(e)

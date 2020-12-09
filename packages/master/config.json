@@ -1,0 +1,6 @@
+{
+    "devices": [ 
+        { "udid": "R3CN90NZ2SK", "name": "Galaxy z Fold2", "showInDashboard": true },
+        { "udid": "R3CN70DJEXV", "name": "Galaxy Note20 Ultra", "showInDashboard": false }
+    ] 
+}
