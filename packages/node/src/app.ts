@@ -1,6 +1,5 @@
 import shelljs from "shelljs"
 import cp from "child_process"
-import iosDevice from 'node-ios-device'
 import commander from "commander"
 
 import Logger from "./logger"
@@ -18,6 +17,7 @@ export class node {
 	private endpoint = "http://localhost:4723"
 	private readonly wdaDefaultPort = 8101
 	private readonly mjpegServerDefaultPort = 9101
+	private iosDevice = undefined
 	
 	async run () {
 		shelljs.config.silent = true
@@ -42,7 +42,10 @@ export class node {
 			this.portMap[this.appiumDefaultPort + i] = "FREE"
 		}
 
-		if (process.platform === "darwin") this.isMacMachine = true
+		if (process.platform === "darwin") { 
+			this.isMacMachine = true
+			this.iosDevice = require("node-ios-device")
+		}
 	}
 
 	private async updateDeviceStatus() {
@@ -94,7 +97,7 @@ export class node {
 	private getOnlineSerials() {
 		let serials = {}
 		if (this.isMacMachine) {
-			iosDevice.list().map((device: IOSDeviceInfo) => { serials[device.udid] = "ios" })
+			this.iosDevice.list().map((device: IOSDeviceInfo) => { serials[device.udid] = "ios" })
 			this.getOnlineSimulator().map((device: IOSDeviceInfo) => { serials[device.udid] = "ios" })
 		} 
 		
@@ -146,7 +149,7 @@ export class node {
 			this.startAppiumServer(serial, port, wdaPort.toString())
 			
 			if (platform === "ios") {
-				const devicelist = iosDevice.list().concat(this.getOnlineSimulator())
+				const devicelist = this.iosDevice.list().concat(this.getOnlineSimulator())
 				const deviceInfo: IOSDeviceInfo = devicelist.filter((device: IOSDeviceInfo) => {return device.udid === serial})
 				const name = deviceInfo[0]?.productType ? iPhone_TYPE[deviceInfo[0].productType] : deviceInfo[0].name
 
