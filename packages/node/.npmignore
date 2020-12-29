@@ -7,3 +7,4 @@ tslint.json
 yarn.lock
 yarn*
 src/
+resources/
