@@ -1,0 +1,3 @@
+#!/usr/bin/env NODE_ENV=production node
+process.argv.push(`--dir=${__dirname}/../`)
+require("../dist/server.js", process.argv.join(" "))

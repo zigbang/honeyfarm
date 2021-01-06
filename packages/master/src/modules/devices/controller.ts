@@ -62,7 +62,7 @@ export class DevicesController {
 	getDevices(@Req() req: Request) {
 		const devices = SessionRouter.lsResource()
 
-		if (devices && !req?.body?.all) {
+		if (devices && !req?.query?.all) {
 			const testableDevices: {[key: string]: {}} = {}
 
 			Object.entries<DeviceConfig>(devices)
