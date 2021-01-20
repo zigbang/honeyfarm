@@ -1,0 +1,41 @@
+{
+    "name": "@zigbang/honeyfarm-dashboard",
+    "version": "0.1.1",
+    "bin": {
+        "honeyfarm-dashboard": "bin/run"
+    },
+    "keywords": [
+        "e2e",
+        "appium",
+        "wdio",
+        "zigbang"
+    ],
+    "repository": "https://github.com/zigbang/honeyfarm",
+    "engines": {
+        "node": ">= 10"
+    },
+    "scripts": {
+        "dev": "cross-env ts-node server.ts",
+        "build": "cross-env next build",
+        "start": "cross-env NODE_ENV=production ts-node server.ts",
+        "deploy": "ts-node src/lib/deploy.ts"
+    },
+    "dependencies": {
+        "axios": "^0.21.1",
+        "next": "10.0.4",
+        "react": "17.0.1",
+        "react-dom": "17.0.1",
+        "shelljs": "^0.8.3"
+    },
+    "devDependencies": {
+        "@types/node": "^14.14.20",
+        "@types/react": "^17.0.0",
+        "@types/shelljs": "^0.8.3",
+        "typescript": "^4.1.3",
+        "cross-env": "6.0.3"
+    },
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org",
+        "access": "public"
+    }
+}

@@ -6,6 +6,7 @@ import proxy from "express-http-proxy"
 import ejs from "ejs"
 // tslint:disable-next-line:  match-default-export-name
 import express from "express"
+const cors = require("cors")
 
 import { DevicesController } from "./modules/devices/controller"
 import { SessionController } from "./modules/session/controller"
@@ -28,6 +29,7 @@ async function bootstrap() {
 	app.set("views", __dirname)
 	app.set("view engine", "ejs")
 	app.engine("html", ejs.renderFile)
+	context.use(cors())
 	context.use(bodyParser.json({ limit: "100mb" }))
 	context.use(ipfilter())
 	context.use("/wd/hub/session/*/*", proxy((...args) => SessionRouter.router(...args), {

@@ -21,7 +21,7 @@ config.json file을 root에 추가해서 단말을 설정하기 위한 옵션
 
 ## API
 
-| path | description | example | body |
+| path | description | example | params |
 |:---|:---|:---|:---|
 | (GET)`/devices` | 현재 등록된 테스트용 단말 목록 |`localhost:4723/devices`| all : true 모든 단말 표시|
 

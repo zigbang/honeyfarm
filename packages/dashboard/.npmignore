@@ -1,0 +1,13 @@
+.git
+.DS_Store
+node_modules/
+tslint.json
+yarn.lock
+yarn*
+pages/
+styles/
+lib/
+src/
+next.config.js
+tsconfig.json
+**/*.ts*

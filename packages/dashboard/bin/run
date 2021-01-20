@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+const shelljs = require("shelljs")
+process.argv.push(`--dir=${__dirname}/../`)
+shelljs.exec(`NODE_ENV=production node ${__dirname}/../dist/server.js ${process.argv.join(" ")}`)
