@@ -122,8 +122,6 @@ class SessionRouter {
 	}
 
 	findDeviceResource(ip: string, platform: string, version: string, udid?: string): boolean {
-		console.log("findDeviceResource", SessionRouter.resources)
-
 		if (!this.checkNodeDeviceTimer) {
 			this.checkNodeDeviceTimer = setInterval(() => {
 				this.checkNodeDevice()
