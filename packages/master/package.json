@@ -1,6 +1,6 @@
 {
   "name": "@zigbang/honeyfarm-master",
-  "version": "0.1.8",
+  "version": "0.1.10",
   "bin": {
     "honeyfarm-master": "bin/run"
   },

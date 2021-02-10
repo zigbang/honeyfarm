@@ -35,6 +35,7 @@ export class SessionController {
 		// ex) zbee에서 version 7로 요청시 7.1.1 7.1.2 모두 선택 가능 하기 때문에 기존에 4723 port가 7.1.1 단말을 사용 중 이더라도 4724 port가 동일한 단말을 사용 하려고 할수 있음
 		// 그래서 appium:udid(android device serial) 사용해서 특정한 단말을 선택하는 코드 추가
 		udid = udid ? udid : SessionRouter.findUDID(remoteAppiumAddress)
+
 		if (udid && req && req.body) {
 			// tslint:disable-next-line: no-unsafe-any
 			req.body.desiredCapabilities = { ...req.body.desiredCapabilities,  "appium:udid": udid }
@@ -79,7 +80,8 @@ export class SessionController {
 			}, {
 				headers: {
 					...req.headers
-				}
+				},
+				timeout: 10 * 60 * 1000
 			})
 
 			SessionRouter.setNewCommandTimeOut(newCommandTimeout)
@@ -112,7 +114,8 @@ export class SessionController {
 			const response = await Axios.delete(`${remoteAppiumAddress}${req.path}`,  {
 				headers: {
 					...req.headers
-				}
+				},
+				timeout: 10 * 60 * 1000
 			})
 			console.log(`DeleteSession response: ${response}`)
 			const headers = response.headers as { [key: string]: string }
