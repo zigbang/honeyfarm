@@ -32,24 +32,41 @@ export class node {
 
 		this.api = new API(this.endpoint)
 
-		this.init()
+		await this.init()
 
 		await this.updateDeviceStatus()
 	}
 
-	private init() {
+	private async init() {
 		for(let i = 0; i < this.maxDevices; i++){
 			this.portMap[this.appiumDefaultPort + i] = "FREE"
 		}
 
 		if (process.platform === "darwin") { 
 			this.isMacMachine = true
-			this.iosDevice = require("node-ios-device")
+			this.iosDevice = await this.getIosDeviceList()
+			
+			console.log(await this.iosDevice)
 		}
 	}
 
+	private async getIosDeviceList() {
+		return new Promise((resolve, reject) => {
+			const nid = require("node-ios-device")
+			nid.devices((err, devices) => {
+				if(err) {
+					reject(err)
+				}
+				else {
+					resolve(devices)
+				}
+			})
+		})
+		
+	}
+
 	private async updateDeviceStatus() {
-		const onlineSerials = this.getOnlineSerials()
+		const onlineSerials = await this.getOnlineSerials()
 		Logger.info(`Discovered Devices: ${JSON.stringify(onlineSerials)}`)
 
 		// 현재 등록된 디바이스 중 연결되지 않는 디바이스 제거
@@ -94,10 +111,11 @@ export class node {
 		}, 10000)
 	}
 
-	private getOnlineSerials() {
+	private async getOnlineSerials() {
 		let serials = {}
 		if (this.isMacMachine) {
-			this.iosDevice.list().map((device: IOSDeviceInfo) => { serials[device.udid] = "ios" })
+			this.iosDevice = await this.getIosDeviceList()
+			this.iosDevice.map((device: IOSDeviceInfo) => { serials[device.udid] = "ios" })
 			this.getOnlineSimulator().map((device: IOSDeviceInfo) => { serials[device.udid] = "ios" })
 		} 
 		
@@ -149,7 +167,8 @@ export class node {
 			this.startAppiumServer(serial, port, wdaPort.toString())
 			
 			if (platform === "ios") {
-				const devicelist = this.iosDevice.list().concat(this.getOnlineSimulator())
+				this.iosDevice = await this.getIosDeviceList()
+				const devicelist = this.iosDevice.concat(this.getOnlineSimulator())
 				const deviceInfo: IOSDeviceInfo = devicelist.filter((device: IOSDeviceInfo) => {return device.udid === serial})
 				const name = deviceInfo[0]?.productType ? iPhone_TYPE[deviceInfo[0].productType] : deviceInfo[0].name
 
