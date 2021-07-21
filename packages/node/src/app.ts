@@ -52,7 +52,6 @@ export class node {
 
 	private async getIosDeviceList() {
 		return new Promise((resolve, reject) => {
-			const nid = require("node-ios-device")
 			nid.devices((err, devices) => {
 				if(err) {
 					reject(err)
@@ -152,6 +151,10 @@ export class node {
 	}
 
 	private async addDeviceToLocal(serial: string, platform: "android" | "ios") {
+
+		if(platform === "ios") {
+			this.iosDevice = await this.getIosDeviceList()
+		}
 		const result = Object.entries(this.portMap).find(([port, status]) => status === "FREE")
 		if (!result) {
 			Logger.error(`All Ports Already in USED`)
@@ -167,7 +170,6 @@ export class node {
 			this.startAppiumServer(serial, port, wdaPort.toString())
 			
 			if (platform === "ios") {
-				this.iosDevice = await this.getIosDeviceList()
 				const devicelist = this.iosDevice.concat(this.getOnlineSimulator())
 				const deviceInfo: IOSDeviceInfo = devicelist.filter((device: IOSDeviceInfo) => {return device.udid === serial})
 				const name = deviceInfo[0]?.productType ? iPhone_TYPE[deviceInfo[0].productType] : deviceInfo[0].name
