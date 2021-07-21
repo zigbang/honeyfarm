@@ -52,6 +52,7 @@ export class node {
 
 	private async getIosDeviceList() {
 		return new Promise((resolve, reject) => {
+			const nid = require("node-ios-device")
 			nid.devices((err, devices) => {
 				if(err) {
 					reject(err)
@@ -170,6 +171,7 @@ export class node {
 			this.startAppiumServer(serial, port, wdaPort.toString())
 			
 			if (platform === "ios") {
+				
 				const devicelist = this.iosDevice.concat(this.getOnlineSimulator())
 				const deviceInfo: IOSDeviceInfo = devicelist.filter((device: IOSDeviceInfo) => {return device.udid === serial})
 				const name = deviceInfo[0]?.productType ? iPhone_TYPE[deviceInfo[0].productType] : deviceInfo[0].name
