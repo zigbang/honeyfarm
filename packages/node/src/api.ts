@@ -11,7 +11,24 @@ export default class HoneyFramAPI {
         Logger.info(`Honey Farm Master ADDRESS: ${this.SERVER_ADDRESS}`)
     }
 
-    public async registerDeviceStatus(port: string, platform: string, version: string, udid?: string, name?: string, wdaPort?: string, mjpegServerPort?: string, type?: string) {
+	public async updateDeviceStatus(port: string, stat) {
+
+		try {
+			await Axios.put(`${this.SERVER_ADDRESS}/update`, {port, ...stat}, {
+                headers: {
+                    "Content-Type" : "application/json"
+                }
+			})
+			
+			return true
+		} catch(e) {
+			Logger.error(`Cannot Put: ${this.SERVER_ADDRESS}/update`)
+			Logger.error(e)
+		}
+		return false
+	}
+
+    public async registerDeviceStatus(port: string, platform: string, version: string, udid?: string, name?: string, wdaPort?: string, mjpegServerPort?: string, type?: string, batteryLevel?: number) {
 		try {
 			await Axios.post(`${this.SERVER_ADDRESS}/register`, {
 					port,
@@ -21,7 +38,8 @@ export default class HoneyFramAPI {
 					name,
 					wdaPort,
 					mjpegServerPort,
-					type
+					type,
+					batteryLevel
             }, {
                 headers: {
                     "Content-Type" : "application/json"

@@ -17,6 +17,7 @@ export interface ResourceType {
 	wdaPort?: string
 	mjpegServerPort?: string
 	type?: DeviceType
+	batteryLevel?: number
 }
 
 export const iPhone_TYPE = {

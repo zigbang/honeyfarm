@@ -22,7 +22,8 @@ export interface Device extends DeviceConfig {
 	version: string,
 	wdaPort?: string,
 	mjpegServerPort?: string,
-	type?: "real" | "simulator" | "emulator"
+	type?: "real" | "simulator" | "emulator",
+	batteryLevel: number
 }
 
 export interface DeviceState extends Device {

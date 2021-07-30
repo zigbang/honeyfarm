@@ -1,12 +1,36 @@
-import { BadRequestException, Controller, Get, Post, Req, Res } from "@nestjs/common"
+import { BadRequestException, Controller, Get, Post, Put, Req, Res } from "@nestjs/common"
 import { Request, Response } from "express"
 
 import SessionRouter from "../../util/SessionRouter"
 import { DeviceState, Device, DeviceConfig } from "../../util/types"
 import { FromJson } from "../../util/getConfig"
 
+
 @Controller()
 export class DevicesController {
+
+	@Put("/update")
+	async updateDevice(@Req() req: Request, @Res() res: Response) {
+
+		const body = req.body
+
+		const clientAddr = this.getClientAddr(req)
+		const addr = `${clientAddr}:${body.port}`
+
+		let deviceResource = SessionRouter.getDeviceResource(addr)
+		if(!deviceResource) {
+			console.log("cannot find device resource : ", addr)
+		}
+		else {
+			deviceResource.batteryLevel = body.batteryLevel
+			const updatedResouce = Object.assign(deviceResource, body)
+			SessionRouter.updateDeviceResource(addr, updatedResouce)
+		}
+		res.send()
+
+		console.log(`updateDevice : ${addr}`, body)
+	}
+	
 	@Post("/register")
 	async registerDevice(@Req() req: Request, @Res() res: Response) {
 		const body = req.body as Device
@@ -15,13 +39,14 @@ export class DevicesController {
 
 		const clientAddr = this.getClientAddr(req)
 		const addr = `${clientAddr}:${body.port}`
-
+		
 		const deviceConfig: DeviceConfig = await this.getDeviceConfig(body.udid)
 
 		const deviceResource: DeviceState = {
 			platform: body.platform,
 			version: body.version,
 			status: "FREE",
+			batteryLevel: body.batteryLevel,
 			udid: body.udid,
 			name: body.name ? body.name : deviceConfig.name,
 			wdaPort: body.wdaPort,
@@ -32,6 +57,8 @@ export class DevicesController {
 
 		SessionRouter.updateDeviceResource(addr, deviceResource)
 		res.send()
+
+		console.log("registerDevice : ", addr)
 	}
 
 	@Post("/deregister")

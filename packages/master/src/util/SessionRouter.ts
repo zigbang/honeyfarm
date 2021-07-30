@@ -111,6 +111,13 @@ class SessionRouter {
 		}
 	}
 
+	getDeviceResource(addr: string): DeviceState | null {
+		if(false === SessionRouter.resources.hasOwnProperty(addr)) {
+			return null
+		}
+		return SessionRouter.resources[addr];
+	}
+
 	updateDeviceResource(addr: string, resource: DeviceState) {
 		SessionRouter.resources[addr] = resource
 		console.log("updateDeviceResource",  SessionRouter.resources)

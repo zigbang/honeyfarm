@@ -86,6 +86,10 @@ export class node {
 
 				if (!checkAppiumServer) this.startAppiumServer(key, resource.port, resource.wdaPort)
 			}
+
+			if(value === "android") {
+				this.updateBatteryLevel(key)
+			}
 		}))
 
 		// 클라이언트에 등록된 디바이스 중 서버에 등록되지 않은 경우
@@ -109,6 +113,26 @@ export class node {
 		setTimeout(async () => {
 			await this.updateDeviceStatus()
 		}, 10000)
+	}
+
+	private async updateBatteryLevel(udid: string) {
+
+		let remaining = -1
+		let batteryLevel = shelljs.exec(`adb -s ${udid} shell dumpsys battery | grep level`).stdout
+		if(batteryLevel.includes("level")) {
+			let vals = batteryLevel.split(":")
+			if(vals.length === 2) {
+				remaining = parseInt(vals[1])
+			}
+		}
+
+		this.resources[udid].batteryLevel = remaining
+		const port = this.resources[udid].port
+		console.log("batteryLevel : ", this.resources[udid])
+
+		await this.api.updateDeviceStatus(port, {
+			batteryLevel: remaining
+		})
 	}
 
 	private async getOnlineSerials() {
@@ -236,7 +260,7 @@ export class node {
 
 		try {
 			Logger.info(`Adding Device(Server) ${serial} to Port ${device.port}`)
-			await this.api.registerDeviceStatus(device.port, device.platform, device.version, serial, device.name, device.wdaPort, device.mjpegServerPort, device.type)
+			await this.api.registerDeviceStatus(device.port, device.platform, device.version, serial, device.name, device.wdaPort, device.mjpegServerPort, device.type, device.batteryLevel)
 			Logger.info(`Added Device(Server) ${serial} to Port ${device.port}`)
 		} catch (e) {
 			Logger.error(`Error while Add Device to Server`)
