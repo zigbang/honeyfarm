@@ -51,13 +51,15 @@ export default class Dashboard extends React.Component<{endpoint?: string}> {
                 const nodeAddress = key.split(":")[0]
                 const status = value.showInDashboard ? "DASHBOARD" : value.status
 
+				const url = `http://${nodeAddress}:8000/#!action=stream&udid=${value.udid}&player=mse&ws=ws%3A%2F%2F${nodeAddress}%3A8000%2F%3Faction%3Dproxy-adb%26remote%3Dtcp%253A8886%26udid%3D${value.udid}`
+				console.log("url : ", url)
                 if(value.platform === "android" && nodeAddress) {
                     const view = (
                         <div style={page_view} key={`${value.udid}`}>
                             <div style={{ width: "fit-content", height: "fit-content"}}>
                                 <div>{value.name} [{status}]</div>
                             </div>
-                            <iframe height="750px" width="500px" src={`http://${nodeAddress}:8000/#!action=stream&udid=${value.udid}&decoder=broadway&ip=${nodeAddress}&port=8000&query=%3Faction%3Dproxy%26remote%3Dtcp%253A8886%26udid%3D${value.udid}`} frameBorder="0"></iframe>
+							<iframe height="750px" width="500px" src={url} frameBorder="0"></iframe>
                         </div>
                     )
                     views.push(view)
