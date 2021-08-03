@@ -38,7 +38,7 @@
     "@nestjs/platform-express": "^6.10.14",
     "@types/cheerio": "^0.22.22",
     "@types/ejs": "^3.0.5",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
     "ejs": "^3.1.5",
