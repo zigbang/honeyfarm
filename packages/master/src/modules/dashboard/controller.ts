@@ -30,7 +30,7 @@ export class DashboardController {
 					<div class="title_view">
 						<text class="title">${value.name} (${status})</text>
 					</div>
-					<iframe height="750px" width="500px" src="http://${nodeAddress}:${wsPort}/#!action=stream&udid=${value.udid}&decoder=broadway&ip=${nodeAddress}&port=${wsPort}&query=%3Faction%3Dproxy%26remote%3Dtcp%253A8886%26udid%3D${value.udid}" frameBorder="0"></iframe>
+					<iframe height="750px" width="500px" src="http://${nodeAddress}:8000/#!action=stream&udid=${value.udid}&player=mse&ws=ws%3A%2F%2F${nodeAddress}%3A8000%2F%3Faction%3Dproxy-adb%26remote%3Dtcp%253A8886%26udid%3D${value.udid}" frameBorder="0"></iframe>
 				</div>
 				`
 				$(view_container_html).appendTo($(".page_container"))
