@@ -1,7 +1,7 @@
 import SessionRouter from "./SessionRouter"
 
 export class Queue {
-	private queue: {platform: string, udid: string, version: string, resolve: (value?: string) => void, time: number}[] = []
+	private queue: {platform: string, udid: string, version: string, resolve: (value?: string) => void, time: number, complete: boolean }[] = []
 
 	constructor() {
 		setInterval(() => { this.looper() }, 1000)
@@ -9,7 +9,7 @@ export class Queue {
 
 	async register(platform: string, udid: string, version: string): Promise<string | undefined> {
 		const result: string | undefined = await new Promise((resolve) => {
-			this.queue.push({ platform, version, udid, resolve, time: Date.now() })
+			this.queue.push({ platform, version, udid, resolve, time: Date.now(), complete: false })
 		})
 
 		return result
@@ -26,11 +26,12 @@ export class Queue {
 			}
 
 			const validItems = this.queue.filter((q) => q.time + INTERVAL > now )
-			for (const q of validItems) {
+			for (let q of validItems) {
 				const ip = SessionRouter.findIp(q.platform, q.udid, q.version)
-				if (ip && !!q.resolve) {
+				if (ip && q.resolve && q.complete === false) {
 					q.resolve(ip)
-					delete q.resolve
+					q.complete = true
+					console.log("[looper] ", q)
 					return
 				}
 			}
