@@ -1,0 +1,25 @@
+{
+	"groups" :[
+		{
+			"name": "android group 1",
+			"controller_endpoint": "http://192.168.0.xxx/",
+			"devices": [
+				"R3CN30F7W6R",
+				"LGMV300Ke3f51a8d",
+				"1c551548fc0d7ece",
+				"281a984c7c0d7ece"
+			]
+		},
+		{
+			"name": "android group 2",
+			"controller_endpoint": "http://192.168.0.xxx/",
+			"devices": [
+				"R3CM80H4A8E",
+				"ce071717e10a9f1f047e",
+				"R3CN90NZ2SK"
+			]
+		}
+		
+
+	]
+}

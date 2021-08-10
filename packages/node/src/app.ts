@@ -4,6 +4,7 @@ import commander from "commander"
 
 import Logger from "./logger"
 import API from "./api"
+import BMS from "./bms"
 import { ResourceType, PortStatus, IOSDeviceInfo, iPhone_TYPE } from "./util/types"
 
 
@@ -18,7 +19,9 @@ export class node {
 	private readonly wdaDefaultPort = 8101
 	private readonly mjpegServerDefaultPort = 9101
 	private iosDevice = undefined
-	
+	private bms: BMS
+	private readonly CHECK_BATTERY_TERM = 10 * 1000
+
 	async run () {
 		shelljs.config.silent = true
 		commander
@@ -31,10 +34,13 @@ export class node {
 			.parse(process.argv)
 
 		this.api = new API(this.endpoint)
+		this.bms = new BMS()
 
 		await this.init()
 
 		await this.updateDeviceStatus()
+
+		setInterval(() => this.bms.checkBatteryStatus(this.resources), this.CHECK_BATTERY_TERM)
 	}
 
 	private async init() {
