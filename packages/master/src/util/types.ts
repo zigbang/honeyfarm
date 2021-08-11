@@ -30,9 +30,9 @@ export interface DeviceState extends Device {
 	status: DeviceStatus
 }
 export interface BatteryConfig {
-	status?: "on" | "off",
-	threshold?: {
-		max: number,
-		min: number
+	status: "on" | "off",
+	threshold: {
+		max?: number,
+		min?: number
 	}
 }
