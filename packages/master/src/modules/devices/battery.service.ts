@@ -21,7 +21,7 @@ export class BatteryService {
 		} else {
 			//else use Yaml
 			this.updateBatteryControlInfo(true)
-			let cronReadBatteryConfig = setInterval(() => this.updateBatteryControlInfo(false), 3_000)
+			let cronReadBatteryConfig = setInterval(() => this.updateBatteryControlInfo(false), 300_000)
 		}
 	}
 	async getBatteryControlInfo(): Promise<BatteryConfig> {
