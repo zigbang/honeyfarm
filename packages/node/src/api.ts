@@ -87,4 +87,15 @@ export default class HoneyFramAPI {
 		}
 		return false
 	}
+
+	public async getBatteryChargeRule() {
+		try {
+			const result = await Axios.get(`${this.SERVER_ADDRESS}/battery`)
+			return result.data
+		}
+		catch(e) {
+			Logger.error(`Cannot Post: ${this.SERVER_ADDRESS}/battery`)
+			Logger.error(e)
+		}
+	}
 }

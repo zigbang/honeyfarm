@@ -20,7 +20,7 @@ export class node {
 	private readonly mjpegServerDefaultPort = 9101
 	private iosDevice = undefined
 	private bms: BMS
-	private readonly CHECK_BATTERY_TERM = 10 * 1000
+	private readonly CHECK_BATTERY_TERM = 60 * 1000 * 5 // 5min
 
 	async run () {
 		shelljs.config.silent = true
@@ -40,7 +40,21 @@ export class node {
 
 		await this.updateDeviceStatus()
 
-		setInterval(() => this.bms.checkBatteryStatus(this.resources), this.CHECK_BATTERY_TERM)
+		this.checkBatteryStatus()
+		setInterval(async () => {
+			this.checkBatteryStatus()
+		}, this.CHECK_BATTERY_TERM)
+	}
+
+	private async checkBatteryStatus() {
+		const rule = await this.api.getBatteryChargeRule();
+		if(true === rule.hasOwnProperty("threshold")) {
+			this.bms.setBatteryChargeLevelRange(rule.threshold.min, rule.threshold.max);
+		}
+		else {
+			Logger.warn(`Invalid battery threshold value: ${rule}`)
+		}
+		this.bms.checkBatteryStatus(this.resources)
 	}
 
 	private async init() {
@@ -51,8 +65,6 @@ export class node {
 		if (process.platform === "darwin") { 
 			this.isMacMachine = true
 			this.iosDevice = await this.getIosDeviceList()
-			
-			console.log(await this.iosDevice)
 		}
 	}
 
