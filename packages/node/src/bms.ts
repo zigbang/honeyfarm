@@ -46,22 +46,21 @@ export default class BMS {
 		// todo
 	}
 
-	public checkBatteryStatus(resourcesa: ResourceDictionaryType): void {
+	public checkBatteryStatus(resources: ResourceDictionaryType): void {
 		
-		let resources = {
-			"R3CM80H4A8E": {
-				batteryLevel: 55
-			},
-			"ce071717e10a9f1f047e": {
-				batteryLevel: 55
-			},
-			"R3CN90NZ2SK": {
-				batteryLevel: 55
-			}
-		}
+		// let resources = {
+		// 	"R3CM80H4A8E": {
+		// 		batteryLevel: 55
+		// 	},
+		// 	"ce071717e10a9f1f047e": {
+		// 		batteryLevel: 55
+		// 	},
+		// 	"R3CN90NZ2SK": {
+		// 		batteryLevel: 55
+		// 	}
+		// }
 		this.device_groups_.forEach((group: DeviceGroupType) => {
 
-			console.log("group ", group.name);
 			let count_exceed_max = 0;
 			for(let i=0;i<group.devices.length;i++) {
 				
