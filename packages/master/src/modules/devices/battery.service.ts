@@ -44,6 +44,8 @@ export class BatteryService {
 	}
 
 	private async readConfigYaml() {
+		//test ecs environment variables
+
 		if (fs.existsSync(`${process.cwd()}/conf/batteryConfig.yaml`)) {
 			try {
 				return yaml.load(fs.readFileSync(`${process.cwd()}/conf/batteryConfig.yaml`))

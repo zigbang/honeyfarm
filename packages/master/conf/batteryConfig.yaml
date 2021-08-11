@@ -1,4 +1,4 @@
 status: on
 threshold:
-  max: 90
+  max: 80
   min: 20
