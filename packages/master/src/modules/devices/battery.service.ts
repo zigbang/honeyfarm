@@ -14,8 +14,8 @@ export class BatteryService {
 		},
 	}
 	constructor(private cacheManager: Cache) {
-		this.updateBatteryControlInfo()
-		let cronReadBatteryConfig = setInterval(() => this.updateBatteryControlInfo(), 300_000)
+		this.updateBatteryControlInfo(true)
+		let cronReadBatteryConfig = setInterval(() => this.updateBatteryControlInfo(false), 300_000)
 	}
 	async getBatteryControlInfo(): Promise<BatteryConfig> {
 		let rst: BatteryConfig | undefined;
@@ -28,19 +28,20 @@ export class BatteryService {
 		return rst;
 	}
 
-	private async updateBatteryControlInfo() {
+	private async updateBatteryControlInfo(init?: boolean) {
 		//Read From file
 		const newBci = await this.readConfigYaml();
 		const pastBci = this.batteryControlInfo;
-		if (JSON.stringify(newBci) === JSON.stringify(pastBci)) {
+		if (!init && JSON.stringify(newBci) === JSON.stringify(pastBci)) {
 			//pass update logic when unchanged
+			// Logger.log(`"batteryConfig.yaml" is unchanged:\n${JSON.stringify(this.batteryControlInfo, null, 6)}`, 'BatteryService');
+
 			return;
 		} else {
 			//update
 			this.batteryControlInfo = await this.cacheManager.set('batteryInfo', newBci);
 			Logger.log(`"batteryConfig.yaml" is updated:\n${JSON.stringify(this.batteryControlInfo, null, 6)}`, 'BatteryService');
 		}
-
 	}
 
 	private async readConfigYaml() {
@@ -50,6 +51,7 @@ export class BatteryService {
 			try {
 				return yaml.load(fs.readFileSync(`${process.cwd()}/conf/batteryConfig.yaml`))
 			} catch (e) {
+				console.log(e)
 				return undefined
 			}
 		} else {
