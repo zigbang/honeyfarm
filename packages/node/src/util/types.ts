@@ -51,3 +51,18 @@ export const iPhone_TYPE = {
 	"iPhone12,5" : "iPhone 11 Pro Max",
 	"iPhone12,8" : "iPhone SE 2nd Gen"
 }
+
+export interface DeviceGroupType {
+	name: string
+	controller_endpoint: string
+	devices: string[]
+}
+
+export interface ResourceDictionaryType {
+	[serialNo: string]: ResourceType
+}
+
+export interface PairType {
+	first: number
+	second: number
+}
