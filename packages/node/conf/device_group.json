@@ -1,8 +1,8 @@
 {
 	"groups" :[
 		{
+			"is_bind_controller": false,
 			"name": "android group 1",
-			"controller_endpoint": "http://192.168.0.xxx/",
 			"devices": [
 				"R3CN30F7W6R",
 				"LGMV300Ke3f51a8d",
@@ -11,12 +11,20 @@
 			]
 		},
 		{
+			"is_bind_controller": false,
 			"name": "android group 2",
-			"controller_endpoint": "http://192.168.0.xxx/",
 			"devices": [
 				"R3CM80H4A8E",
 				"ce071717e10a9f1f047e",
 				"R3CN90NZ2SK"
+			]
+		},
+		{
+			"is_bind_controller": true,
+			"name": "android local",
+			"controller_endpoint": "http://192.168.0.127/",
+			"devices": [
+				"R3CN70DJEXV"
 			]
 		}
 		

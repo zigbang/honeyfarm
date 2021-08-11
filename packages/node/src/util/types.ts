@@ -53,8 +53,9 @@ export const iPhone_TYPE = {
 }
 
 export interface DeviceGroupType {
+	is_bind_controller: boolean,
 	name: string
-	controller_endpoint: string
+	controller_endpoint?: string
 	devices: string[]
 }
 

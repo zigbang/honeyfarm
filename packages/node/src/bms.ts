@@ -2,6 +2,7 @@ import axios from "axios"
 import Logger from "./logger"
 import fs from "fs"
 import path from "path"
+
 import { DeviceGroupType, ResourceDictionaryType, PairType } from "./util/types"
 
 export default class BMS {
@@ -13,10 +14,14 @@ export default class BMS {
 	private device_groups_: DeviceGroupType[] = [];
 
 	private batteryLevelRange_: PairType = { first: 10, second: 100 };
+
 	constructor() {
 		this.loadDeviceGroup()
-
 		this.timer_handle_ = setInterval(() => this.loadDeviceGroup(), this.SYNC_TERM)
+	}
+
+	public setBatteryChargeLevelRange(min: number, max: number) {
+		this.batteryLevelRange_ = { first: min, second: max }
 	}
 
 	private loadDeviceGroup(): void {
@@ -28,39 +33,39 @@ export default class BMS {
 				this.device_groups_ = dg_data["groups"]
 			}
 			catch(e) {
-				console.log("invalid device_group.json file. check your configuration first!");
+				Logger.error("invalid device_group.json file. check your configuration first!")
+				Logger.error(e)
 				clearInterval(this.timer_handle_);
 			}
 		}
 		else {
-			console.log("no-file")
+			Logger.info("there is no device_group.json file.")
 		}
 	}
 
-	private fetchBatterySwtichStatus() {
-		// todo
-	}
+	private async operateBatterySwitch(endpoint: string, turn_on: boolean) {
 
-	private operateBatterySwitch(endpoint: string, turnOn: boolean) {
+		const command = turn_on ? "Power on": "Power off"
+		let query_str = endpoint + "cm?cmnd=" + command
+		Logger.info(`operateBatterySwitch : endpoint=${endpoint}, turn_on=${turn_on}}`, endpoint, turn_on);
 
-		// todo
+		try {
+			await axios.get(query_str);
+		}
+		catch(e) {
+			Logger.error("operateBatterySwitch failed")
+			Logger.error(e)
+		}
 	}
 
 	public checkBatteryStatus(resources: ResourceDictionaryType): void {
 		
-		// let resources = {
-		// 	"R3CM80H4A8E": {
-		// 		batteryLevel: 55
-		// 	},
-		// 	"ce071717e10a9f1f047e": {
-		// 		batteryLevel: 55
-		// 	},
-		// 	"R3CN90NZ2SK": {
-		// 		batteryLevel: 55
-		// 	}
-		// }
-		this.device_groups_.forEach((group: DeviceGroupType) => {
+		this.device_groups_.filter((group: DeviceGroupType) => group.is_bind_controller).forEach((group: DeviceGroupType) => {
 
+			if(false === group.hasOwnProperty("devices") || 0 === group.devices.length) {
+				Logger.warn(`checkBatteryStatus - invalid device group info. check your configuration. group_name:${group.name}`);
+				return;
+			}
 			let count_exceed_max = 0;
 			for(let i=0;i<group.devices.length;i++) {
 				
@@ -68,8 +73,7 @@ export default class BMS {
 				if(resources.hasOwnProperty(udid) && resources[udid].batteryLevel) {
 					const battery_lv = resources[udid].batteryLevel;
 					if(battery_lv <= this.batteryLevelRange_.first) {
-						console.log("turn on power")
-
+						this.operateBatterySwitch(group.controller_endpoint, true)
 						break;
 					}
 					else if(battery_lv >= this.batteryLevelRange_.second) {
@@ -78,7 +82,7 @@ export default class BMS {
 				}
 			}
 			if(count_exceed_max > 0 && count_exceed_max === group.devices.length) {
-				console.log("turn off power");
+				this.operateBatterySwitch(group.controller_endpoint, false)
 			}
 		});
 	}
