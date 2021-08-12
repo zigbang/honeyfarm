@@ -48,7 +48,7 @@ export class node {
 
 	private async checkBatteryStatus() {
 		const rule = await this.api.getBatteryChargeRule();
-		if(true === rule.hasOwnProperty("threshold")) {
+		if(rule && true === rule.hasOwnProperty("threshold")) {
 			this.bms.setBatteryChargeLevelRange(rule.threshold.min, rule.threshold.max);
 		}
 		else {
