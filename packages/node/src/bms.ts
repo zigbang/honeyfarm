@@ -50,10 +50,11 @@ export default class BMS {
 
 		const command = turn_on ? "Power on" : "Power off"
 		let query_str = `${endpoint}cm?user=${this.BMS_USER_INFO.user}&password=${this.BMS_USER_INFO.password}&cmnd=${command}`
-		Logger.info(`operateBatterySwitch : endpoint=${endpoint}, turn_on=${turn_on}}`, endpoint, turn_on);
+		Logger.info(`operateBatterySwitch : endpoint=${endpoint} , turn_on=${turn_on}}`);
 
 		try {
-			await axios.get(query_str);
+			let res = await axios.get(query_str);
+			Logger.info(`sonoff response: ` + JSON.stringify(res.data));
 		}
 		catch (e) {
 			Logger.error("operateBatterySwitch failed")
