@@ -9,7 +9,10 @@ export default class BMS {
 
 	private readonly SYNC_TERM: number = 15 * 60 * 1000;	// 15min
 	private readonly DEVICE_GROUP_PATH: string = "/conf/device_group.json";
-
+	private readonly BMS_USER_INFO = {
+		user: "admin",
+		password: "a1234567890"
+	}
 	private timer_handle_ = null;
 	private device_groups_: DeviceGroupType[] = [];
 
@@ -26,13 +29,13 @@ export default class BMS {
 
 	private loadDeviceGroup(): void {
 		const ABS_PATH = path.resolve() + this.DEVICE_GROUP_PATH;
-		if(fs.existsSync(ABS_PATH)) {
-			let data = fs.readFileSync(ABS_PATH, { encoding: 'utf-8'});
+		if (fs.existsSync(ABS_PATH)) {
+			let data = fs.readFileSync(ABS_PATH, { encoding: 'utf-8' });
 			try {
 				let dg_data = JSON.parse(data);
 				this.device_groups_ = dg_data["groups"]
 			}
-			catch(e) {
+			catch (e) {
 				Logger.error("invalid device_group.json file. check your configuration first!")
 				Logger.error(e)
 				clearInterval(this.timer_handle_);
@@ -45,46 +48,46 @@ export default class BMS {
 
 	private async operateBatterySwitch(endpoint: string, turn_on: boolean) {
 
-		const command = turn_on ? "Power on": "Power off"
-		let query_str = endpoint + "cm?cmnd=" + command
+		const command = turn_on ? "Power on" : "Power off"
+		let query_str = `${endpoint}cm?user=${this.BMS_USER_INFO.user}&password=${this.BMS_USER_INFO.password}&cmnd=${command}`
 		Logger.info(`operateBatterySwitch : endpoint=${endpoint}, turn_on=${turn_on}}`, endpoint, turn_on);
 
 		try {
 			await axios.get(query_str);
 		}
-		catch(e) {
+		catch (e) {
 			Logger.error("operateBatterySwitch failed")
 			Logger.error(e)
 		}
 	}
 
 	public checkBatteryStatus(resources: ResourceDictionaryType): void {
-		
+
 		this.device_groups_.filter((group: DeviceGroupType) => group.is_bind_controller).forEach((group: DeviceGroupType) => {
 
-			if(false === group.hasOwnProperty("devices") || 0 === group.devices.length) {
+			if (false === group.hasOwnProperty("devices") || 0 === group.devices.length) {
 				Logger.warn(`checkBatteryStatus - invalid device group info. check your configuration. group_name:${group.name}`);
 				return;
 			}
 			let count_exceed_max = 0;
-			for(let i=0;i<group.devices.length;i++) {
-				
+			for (let i = 0; i < group.devices.length; i++) {
+
 				const udid = group.devices[i];
-				if(resources.hasOwnProperty(udid) && resources[udid].batteryLevel) {
+				if (resources.hasOwnProperty(udid) && resources[udid].batteryLevel) {
 					const battery_lv = resources[udid].batteryLevel;
-					if(battery_lv <= this.batteryLevelRange_.first) {
+					if (battery_lv <= this.batteryLevelRange_.first) {
 						this.operateBatterySwitch(group.controller_endpoint, true)
 						break;
 					}
-					else if(battery_lv >= this.batteryLevelRange_.second) {
+					else if (battery_lv >= this.batteryLevelRange_.second) {
 						count_exceed_max++;
 					}
 				}
 			}
-			if(count_exceed_max > 0 && count_exceed_max === group.devices.length) {
+			if (count_exceed_max > 0 && count_exceed_max === group.devices.length) {
 				this.operateBatterySwitch(group.controller_endpoint, false)
 			}
 		});
 	}
 
-} 
+}
