@@ -1,4 +1,4 @@
-import { Inject, CACHE_MANAGER, Logger } from "@nestjs/common"
+import { Logger } from "@nestjs/common"
 import * as fs from "fs"
 import { Cache } from "cache-manager"
 import { BatteryConfig } from "../../util/types"
