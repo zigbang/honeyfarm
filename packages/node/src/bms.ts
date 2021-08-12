@@ -45,7 +45,7 @@ export default class BMS {
 
 	private async operateBatterySwitch(endpoint: string, turn_on: boolean) {
 
-		const command = turn_on ? "Power on": "Power off"
+		const command = turn_on ? "Power%20on": "Power%20off"
 		let query_str = endpoint + "cm?cmnd=" + command
 		Logger.info(`operateBatterySwitch : endpoint=${endpoint}, turn_on=${turn_on}}`, endpoint, turn_on);
 
