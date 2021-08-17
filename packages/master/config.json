@@ -1,6 +1,13 @@
 {
     "devices": [ 
-        { "udid": "R3CN90NZ2SK", "name": "Galaxy z Fold2", "showInDashboard": true },
-        { "udid": "R3CN70DJEXV", "name": "Galaxy Note20 Ultra", "showInDashboard": false }
+        
+        { "udid": "R3CN30F7W6R", "name": "Galaxy S20", "showInDashboard": false },
+        { "udid": "281a984c7c0d7ece", "name": "Galaxy Note9", "showInDashboard": false },
+        { "udid": "1c551548fc0d7ece", "name": "Galaxy S9", "showInDashboard": false },
+
+        { "udid": "R3CN90NZ2SK", "name": "Galaxy z Fold2", "showInDashboard": false },
+        { "udid": "R3CM80H4A8E", "name": "Galaxy Note10", "showInDashboard": false },
+        { "udid": "ce071717e10a9f1f047e", "name": "Galaxy Note8", "showInDashboard": false }
+
     ] 
 }
