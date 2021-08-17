@@ -25,10 +25,9 @@
 			"name": "ios group (hub4)",
 			"controller_endpoint": "http://192.168.99.54/",
 			"devices": [
-				"R3CM80H4A8E",
-				"ce071717e10a9f1f047e",
-				"R3CN90NZ2SK"
-			]
+				"5fa6edaabf36c6256fde4392ab6d5f492ad76fda"
+			],
+			"enable_timer": true
 		},
 		{
 			"is_bind_controller": false,
