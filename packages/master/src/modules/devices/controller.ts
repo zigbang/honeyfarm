@@ -1,13 +1,19 @@
-import { BadRequestException, Controller, Get, Post, Put, Req, Res } from "@nestjs/common"
+import { BadRequestException, Controller, Get, Inject, Post, Put, Req, Res, CACHE_MANAGER, Logger, Param } from "@nestjs/common"
+
 import { Request, Response } from "express"
+import { Cache } from "cache-manager"
 
 import SessionRouter from "../../util/SessionRouter"
-import { DeviceState, Device, DeviceConfig } from "../../util/types"
+import { DeviceState, Device, DeviceConfig, BatteryConfig } from "../../util/types"
 import { FromJson } from "../../util/getConfig"
-
-
+import { BatteryService } from "./battery.service"
 @Controller()
 export class DevicesController {
+	private batteryService: BatteryService;
+
+	constructor(@Inject(CACHE_MANAGER) cacheManager: Cache) {
+		this.batteryService = new BatteryService(cacheManager);
+	}
 
 	@Put("/update")
 	async updateDevice(@Req() req: Request, @Res() res: Response) {
@@ -18,7 +24,7 @@ export class DevicesController {
 		const addr = `${clientAddr}:${body.port}`
 
 		let deviceResource = SessionRouter.getDeviceResource(addr)
-		if(!deviceResource) {
+		if (!deviceResource) {
 			console.log("cannot find device resource : ", addr)
 		}
 		else {
@@ -30,16 +36,16 @@ export class DevicesController {
 
 		console.log(`updateDevice : ${addr}`, body)
 	}
-	
+
 	@Post("/register")
 	async registerDevice(@Req() req: Request, @Res() res: Response) {
 		const body = req.body as Device
 
-		if(!body.port || !body.platform || !body.version) throw new BadRequestException("Malformed data")
+		if (!body.port || !body.platform || !body.version) throw new BadRequestException("Malformed data")
 
 		const clientAddr = this.getClientAddr(req)
 		const addr = `${clientAddr}:${body.port}`
-		
+
 		const deviceConfig: DeviceConfig = await this.getDeviceConfig(body.udid)
 
 		const deviceResource: DeviceState = {
@@ -64,7 +70,7 @@ export class DevicesController {
 	@Post("/deregister")
 	async deresgisterDevice(@Req() req: Request, @Res() res: Response) {
 		const body = req.body as Device
-		if(!body.port) throw new BadRequestException("Malformed data")
+		if (!body.port) throw new BadRequestException("Malformed data")
 
 		const clientAddr = this.getClientAddr(req)
 		const addr = `${clientAddr}:${body.port}`
@@ -76,7 +82,7 @@ export class DevicesController {
 	@Post("/device")
 	async getDevice(@Req() req: Request): Promise<Boolean> {
 		const body = req.body as Device
-		if(!body.port || !body.platform || !body.version) throw new BadRequestException("Malformed data")
+		if (!body.port || !body.platform || !body.version) throw new BadRequestException("Malformed data")
 
 		const clientAddr = this.getClientAddr(req)
 		const addr = `${clientAddr}:${body.port}`
@@ -90,16 +96,27 @@ export class DevicesController {
 		const devices = SessionRouter.lsResource()
 
 		if (devices && !req?.query?.all) {
-			const testableDevices: {[key: string]: {}} = {}
+			const testableDevices: { [key: string]: {} } = {}
 
 			Object.entries<DeviceConfig>(devices)
-				.filter(([key, value])=> { return !value.showInDashboard })
+				.filter(([key, value]) => { return !value.showInDashboard })
 				.map(([key, value]) => { testableDevices[key] = value })
 
 			return testableDevices
 		} else {
 			return devices
 		}
+	}
+	@Get("/battery")
+	async getBatteryInfo(@Req() req: Request) {
+		const rst = await this.batteryService.getBatteryControlInfo()
+		return rst
+	}
+
+	@Get("/battery/:item")
+	async getBatteryInfoItem(@Req() req: Request, @Param() params: { item: keyof BatteryConfig }) {
+		const rst = await this.batteryService.getBatteryControlInfo()
+		return rst[params.item];
 	}
 
 	private getClientAddr(req: Request) {
@@ -115,16 +132,17 @@ export class DevicesController {
 
 				for (const device of devices) {
 					if (device.udid === udid) {
-						return { name: device.name, showInDashboard: device.showInDashboard ?  device.showInDashboard : false} 
+						return { name: device.name, showInDashboard: device.showInDashboard ? device.showInDashboard : false }
 					}
 				}
 			}
 
 		} catch (e) {
 			console.log("getDeviceConfig error", e)
-		
+
 		}
 
-		return { name: udid, showInDashboard: false}
-	} 
+		return { name: udid, showInDashboard: false }
+	}
 }
+

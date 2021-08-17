@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common"
+import { Module, CacheModule } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
 import { ExpressAdapter } from "@nestjs/platform-express"
 import * as bodyParser from "body-parser"
@@ -17,7 +17,9 @@ import { ipfilter } from "./util/ipFilter"
 export const app = express()
 
 @Module({
-	imports: [],
+	imports: [
+		CacheModule.register({ ttl: 0 }),
+	],
 	controllers: [SessionController, DevicesController, DashboardController],
 	providers: []
 })

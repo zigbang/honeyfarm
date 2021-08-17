@@ -4,6 +4,7 @@ import commander from "commander"
 
 import Logger from "./logger"
 import API from "./api"
+import BMS from "./bms"
 import { ResourceType, PortStatus, IOSDeviceInfo, iPhone_TYPE } from "./util/types"
 
 
@@ -18,7 +19,9 @@ export class node {
 	private readonly wdaDefaultPort = 8101
 	private readonly mjpegServerDefaultPort = 9101
 	private iosDevice = undefined
-	
+	private bms: BMS
+	private readonly CHECK_BATTERY_TERM = 60 * 1000 * 5 // 5min
+
 	async run () {
 		shelljs.config.silent = true
 		commander
@@ -31,10 +34,27 @@ export class node {
 			.parse(process.argv)
 
 		this.api = new API(this.endpoint)
+		this.bms = new BMS()
 
 		await this.init()
 
 		await this.updateDeviceStatus()
+
+		this.checkBatteryStatus()
+		setInterval(async () => {
+			this.checkBatteryStatus()
+		}, this.CHECK_BATTERY_TERM)
+	}
+
+	private async checkBatteryStatus() {
+		const rule = await this.api.getBatteryChargeRule();
+		if(rule && true === rule.hasOwnProperty("threshold")) {
+			this.bms.setBatteryChargeLevelRange(rule.threshold.min, rule.threshold.max);
+		}
+		else {
+			Logger.warn(`Invalid battery threshold value: ${rule}`)
+		}
+		this.bms.checkBatteryStatus(this.resources)
 	}
 
 	private async init() {
@@ -45,8 +65,6 @@ export class node {
 		if (process.platform === "darwin") { 
 			this.isMacMachine = true
 			this.iosDevice = await this.getIosDeviceList()
-			
-			console.log(await this.iosDevice)
 		}
 	}
 

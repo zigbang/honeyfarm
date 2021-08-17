@@ -1,0 +1,4 @@
+status: on
+threshold:
+  max: 80
+  min: 20
