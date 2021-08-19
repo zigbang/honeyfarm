@@ -15,7 +15,7 @@ export class BatteryService {
 	}
 	constructor(private cacheManager: Cache) {
 		//If environment vars are defined, use them.
-		console.log(`[env variables]\nstatus: ${process.env.BMS_STATUS}/max: ${process.env.BMS_THRESHOLD_MAX}/min: ${process.env.BMS_THRESHOLD_MIN}`)
+		//Logger.log(`\n\t[env variables]\n\tstatus: ${process.env.BMS_STATUS}\n\tmax: ${process.env.BMS_THRESHOLD_MAX}\n\tmin: ${process.env.BMS_THRESHOLD_MIN}`, 'BatteryService', false)
 		if (process.env.BMS_STATUS || process.env.BMS_THRESHOLD_MAX || process.env.BMS_THRESHOLD_MIN) {
 			this.setBatteryControlInfoByEnv()
 		} else {

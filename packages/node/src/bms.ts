@@ -2,25 +2,28 @@ import axios from "axios"
 import Logger from "./logger"
 import fs from "fs"
 import path from "path"
-
 import { DeviceGroupType, ResourceDictionaryType, PairType } from "./util/types"
-
+import Timer from "./timer"
 export default class BMS {
 
-	private readonly SYNC_TERM: number = 15 * 60 * 1000;	// 15min
+	private readonly SYNC_TERM: number = 10_000 //15 * 60 * 1000;	// 15min
 	private readonly DEVICE_GROUP_PATH: string = "/conf/device_group.json";
-	private readonly BMS_USER_INFO = {
-		user: "admin",
-		password: "a1234567890"
-	}
+
 	private timer_handle_ = null;
 	private device_groups_: DeviceGroupType[] = [];
-
 	private batteryLevelRange_: PairType = { first: 10, second: 100 };
+	private timer: Timer
 
 	constructor() {
+		this.timer = new Timer(this.device_groups_);
+
 		this.loadDeviceGroup()
-		this.timer_handle_ = setInterval(() => this.loadDeviceGroup(), this.SYNC_TERM)
+		this.timer.watchEnableTimers()
+		this.timer_handle_ = setInterval(() => {
+			this.loadDeviceGroup()
+			this.timer.watchEnableTimers(this.device_groups_)
+		}, this.SYNC_TERM)
+
 	}
 
 	public setBatteryChargeLevelRange(min: number, max: number) {
@@ -49,7 +52,7 @@ export default class BMS {
 	private async operateBatterySwitch(endpoint: string, turn_on: boolean) {
 
 		const command = turn_on ? "Power on" : "Power off"
-		let query_str = `${endpoint}cm?user=${this.BMS_USER_INFO.user}&password=${this.BMS_USER_INFO.password}&cmnd=${command}`
+		let query_str = `${endpoint}cm?cmnd=${command}`
 		Logger.info(`operateBatterySwitch : endpoint=${endpoint} , turn_on=${turn_on}}`);
 
 		try {
@@ -89,6 +92,21 @@ export default class BMS {
 				this.operateBatterySwitch(group.controller_endpoint, false)
 			}
 		});
+
 	}
 
+	static async operateBatteryCommand(endpoint: string, command: string) {
+		let res = null;
+		let query_str = `${endpoint}cm?cmnd=${command}`
+		Logger.info(`operateBatteryCommand : endpoint=${endpoint}, command=${command}`);
+		try {
+			res = await axios.get(query_str);
+			Logger.info(`sonoff response: ` + JSON.stringify(res.data));
+		}
+		catch (e) {
+			Logger.error("operateBatteryCommand failed")
+			Logger.error(e)
+		}
+		return res;
+	}
 }
