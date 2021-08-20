@@ -13,6 +13,9 @@ export class BatteryService {
 			min: 20
 		},
 	}
+
+	private timerStates: [] = []
+
 	constructor(private cacheManager: Cache) {
 		//If environment vars are defined, use them.
 		//Logger.log(`\n\t[env variables]\n\tstatus: ${process.env.BMS_STATUS}\n\tmax: ${process.env.BMS_THRESHOLD_MAX}\n\tmin: ${process.env.BMS_THRESHOLD_MIN}`, 'BatteryService', false)
@@ -85,7 +88,7 @@ export class BatteryService {
 			try {
 				return yaml.load(fs.readFileSync(`${process.cwd()}/conf/batteryConfig.yaml`))
 			} catch (e) {
-				console.log(e)
+				Logger.log(`Fail to read config yaml: ${e}`, "BatteryService", false)
 				return undefined
 			}
 		} else {
@@ -93,6 +96,19 @@ export class BatteryService {
 		}
 	}
 
+	public updateBmsTimerStates(body: { timerStates: [] }) {
+		try {
+			this.timerStates = body["timerStates"]
+			//Logger.log(`Timerstates updated`, "BatteryService", false)
+		}
+		catch (e) {
+			Logger.error(`Fail to assign timerStates in updateBmsTimerStates(): ${e}`)
+			throw e
+		}
+	}
+	public getBmsTimerStates() {
+		return { timers: [...this.timerStates] }
+	}
 
 }
 

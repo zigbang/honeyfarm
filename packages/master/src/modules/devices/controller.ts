@@ -119,6 +119,24 @@ export class DevicesController {
 		return rst[params.item];
 	}
 
+	@Get("/bms/timer")
+	getBmsTimer(@Req() req: Request) {
+		const rst = this.batteryService.getBmsTimerStates()
+		return rst;
+	}
+
+	@Post("/bms/timer")
+	async postBmsTimer(@Req() req: Request, @Res() res: Response) {
+		//const rst = await this.batteryService.getBatteryControlInfo()
+		try { this.batteryService.updateBmsTimerStates(req.body) }
+		catch (e) {
+			res.status(400).send({ "result": "error", "message": e })
+		}
+		res.status(200).send({ "result": "ok" })
+	}
+
+
+
 	private getClientAddr(req: Request) {
 		return req.headers["x-forwarded-for"] || req.connection.remoteAddress?.replace("::ffff:", "") || ""
 	}
