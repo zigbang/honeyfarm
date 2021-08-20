@@ -3,29 +3,28 @@
 		{
 			"is_bind_controller": true,
 			"name": "android group 1(hub1)",
-			"controller_endpoint": "http://192.168.99.41/",
+			"controller_endpoint": "{Sonoff device's IP Address}",
 			"devices": [
-				"R3CN30F7W6R",
-				"1c551548fc0d7ece",
-				"281a984c7c0d7ece"
+				"{Mobile Device #1's UDID}",
+				"{Mobile Device #2's UDID}"
 			]
 		},
 		{
 			"is_bind_controller": true,
 			"name": "android group 2 (hub2)",
-			"controller_endpoint": "http://192.168.99.50/",
+			"controller_endpoint": "{Sonoff device's IP Address}",
 			"devices": [
-				"R3CM80H4A8E",
-				"ce071717e10a9f1f047e",
-				"R3CN90NZ2SK"
+				"{Mobile Device #1's UDID}",
+				"{Mobile Device #2's UDID}"
 			]
 		},
 		{
 			"is_bind_controller": false,
 			"name": "ios group (hub4)",
-			"controller_endpoint": "http://192.168.99.54/",
+			"controller_endpoint": "{Sonoff device's IP Address}",
 			"devices": [
-				"5fa6edaabf36c6256fde4392ab6d5f492ad76fda"
+				"{Mobile Device #1's UDID}",
+				"{Mobile Device #2's UDID}"
 			],
 			"mode": {
 				"name": "timer",
@@ -37,9 +36,9 @@
 		{
 			"is_bind_controller": false,
 			"name": "android local",
-			"controller_endpoint": "http://192.168.0.127/",
+			"controller_endpoint": "{Sonoff device's IP Address}",
 			"devices": [
-				"R3CN70DJEXV"
+				"{Mobile Device #1's UDID}"
 			]
 		}
 	]
