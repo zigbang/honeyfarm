@@ -27,7 +27,12 @@
 			"devices": [
 				"5fa6edaabf36c6256fde4392ab6d5f492ad76fda"
 			],
-			"enable_timer": true
+			"mode": {
+				"name": "timer",
+				"option": {
+					"timer_term": 2
+				}
+			}
 		},
 		{
 			"is_bind_controller": false,
@@ -35,17 +40,7 @@
 			"controller_endpoint": "http://192.168.0.127/",
 			"devices": [
 				"R3CN70DJEXV"
-			],
-			"enable_timer": false
-		},
-		{
-			"is_bind_controller": false,
-			"name": "android local dev",
-			"controller_endpoint": "http://192.168.0.100/",
-			"devices": [
-				"310016c1e727131f"
-			],
-			"enable_timer": true
+			]
 		}
 	]
 }
