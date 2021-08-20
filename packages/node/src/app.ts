@@ -12,7 +12,7 @@ export class node {
 	private api: API
 	private resources: { [serialNo: string]: ResourceType } = {}
 	private maxDevices = 16
-	private portMap: {[port: string]: PortStatus}= {}
+	private portMap: { [port: string]: PortStatus } = {}
 	private isMacMachine = false
 	private appiumDefaultPort = 4724
 	private endpoint = "http://localhost:4723"
@@ -20,9 +20,9 @@ export class node {
 	private readonly mjpegServerDefaultPort = 9101
 	private iosDevice = undefined
 	private bms: BMS
-	private readonly CHECK_BATTERY_TERM = 60 * 1000 * 5 // 5min
+	private readonly CHECK_BATTERY_TERM = 10 * 1000  // 5min
 
-	async run () {
+	async run() {
 		shelljs.config.silent = true
 		commander
 			.option('--endpoint <endpoint>', 'Setting endpoint')
@@ -43,12 +43,13 @@ export class node {
 		this.checkBatteryStatus()
 		setInterval(async () => {
 			this.checkBatteryStatus()
+			this.updateBmsTimerStates()
 		}, this.CHECK_BATTERY_TERM)
 	}
 
 	private async checkBatteryStatus() {
 		const rule = await this.api.getBatteryChargeRule();
-		if(rule && true === rule.hasOwnProperty("threshold")) {
+		if (rule && true === rule.hasOwnProperty("threshold")) {
 			this.bms.setBatteryChargeLevelRange(rule.threshold.min, rule.threshold.max);
 		}
 		else {
@@ -58,11 +59,11 @@ export class node {
 	}
 
 	private async init() {
-		for(let i = 0; i < this.maxDevices; i++){
+		for (let i = 0; i < this.maxDevices; i++) {
 			this.portMap[this.appiumDefaultPort + i] = "FREE"
 		}
 
-		if (process.platform === "darwin") { 
+		if (process.platform === "darwin") {
 			this.isMacMachine = true
 			this.iosDevice = await this.getIosDeviceList()
 		}
@@ -72,7 +73,7 @@ export class node {
 		return new Promise((resolve, reject) => {
 			const nid = require("node-ios-device")
 			nid.devices((err, devices) => {
-				if(err) {
+				if (err) {
 					reject(err)
 				}
 				else {
@@ -80,7 +81,7 @@ export class node {
 				}
 			})
 		})
-		
+
 	}
 
 	private async updateDeviceStatus() {
@@ -92,7 +93,7 @@ export class node {
 			.filter((serial) => !Object.keys(onlineSerials).includes(serial))
 			.map(async (serial) => { await this.removeDevice(serial) })
 		)
-		
+
 		// 현재 연결된 디바이스 중 클라이언트에 등록되지 않았을 경우
 		await Promise.all(Object.entries<"ios" | "android">(onlineSerials).map(async ([key, value]) => {
 			if (!this.resources[key]) {
@@ -105,7 +106,7 @@ export class node {
 				if (!checkAppiumServer) this.startAppiumServer(key, resource.port, resource.wdaPort)
 			}
 
-			if(value === "android") {
+			if (value === "android") {
 				this.updateBatteryLevel(key)
 			}
 		}))
@@ -133,13 +134,24 @@ export class node {
 		}, 10000)
 	}
 
+	private async updateBmsTimerStates() {
+		const rst = await this.api.postBmsTimerState(this.bms.timer.get_enabled_timers_())
+		if (rst && rst.hasOwnProperty("result") && 'ok' === rst.result) {
+			//success
+			// Logger.info(`BMS timer status is updated.`)
+		}
+		else {
+			Logger.warn(`Fail to update BMS timer status: ${rst}`)
+		}
+	}
+
 	private async updateBatteryLevel(udid: string) {
 
 		let remaining = -1
 		let batteryLevel = shelljs.exec(`adb -s ${udid} shell dumpsys battery | grep level`).stdout
-		if(batteryLevel.includes("level")) {
+		if (batteryLevel.includes("level")) {
 			let vals = batteryLevel.split(":")
-			if(vals.length === 2) {
+			if (vals.length === 2) {
 				remaining = parseInt(vals[1])
 			}
 		}
@@ -159,8 +171,8 @@ export class node {
 			this.iosDevice = await this.getIosDeviceList()
 			this.iosDevice.map((device: IOSDeviceInfo) => { serials[device.udid] = "ios" })
 			this.getOnlineSimulator().map((device: IOSDeviceInfo) => { serials[device.udid] = "ios" })
-		} 
-		
+		}
+
 		const devices = shelljs.exec("adb devices | grep -v devices").stdout
 		const onlineDevices = devices.match(/(\w+-?\w+?)\tdevice$/gm) || []
 
@@ -170,22 +182,23 @@ export class node {
 	}
 
 	private getOnlineSimulator(): IOSDeviceInfo[] {
-		const result :IOSDeviceInfo[] = []
-		
+		const result: IOSDeviceInfo[] = []
+
 		const data = shelljs.exec(`xcrun simctl list devices --json`)
 		const deviceList = JSON.parse(data.toString()) as { devices: {} }
 		for (const [version, devices] of Object.entries(deviceList.devices)) {
 			if (!version.includes("iOS")) {
 				continue
 			}
-			for(const device of devices as { state: string, name: string, udid: string }[]) {
+			for (const device of devices as { state: string, name: string, udid: string }[]) {
 				if (device.state === "Booted") {
 					const versionRex = version?.match(/\w+-\d+-\d+/g)
 					result.push({
-						udid: device.udid, 
-						name: device.name, 
-						productVersion: versionRex? versionRex[0].replace("iOS-","").replace("-",".") : "",
-						type: "simulator"})
+						udid: device.udid,
+						name: device.name,
+						productVersion: versionRex ? versionRex[0].replace("iOS-", "").replace("-", ".") : "",
+						type: "simulator"
+					})
 				}
 			}
 		}
@@ -195,7 +208,7 @@ export class node {
 
 	private async addDeviceToLocal(serial: string, platform: "android" | "ios") {
 
-		if(platform === "ios") {
+		if (platform === "ios") {
 			this.iosDevice = await this.getIosDeviceList()
 		}
 		const result = Object.entries(this.portMap).find(([port, status]) => status === "FREE")
@@ -211,11 +224,11 @@ export class node {
 
 		try {
 			this.startAppiumServer(serial, port, wdaPort.toString())
-			
+
 			if (platform === "ios") {
-				
+
 				const devicelist = this.iosDevice.concat(this.getOnlineSimulator())
-				const deviceInfo: IOSDeviceInfo = devicelist.filter((device: IOSDeviceInfo) => {return device.udid === serial})
+				const deviceInfo: IOSDeviceInfo = devicelist.filter((device: IOSDeviceInfo) => { return device.udid === serial })
 				const name = deviceInfo[0]?.productType ? iPhone_TYPE[deviceInfo[0].productType] : deviceInfo[0].name
 
 				this.resources[serial] = {
@@ -230,10 +243,10 @@ export class node {
 			} else {
 				const platformVersion = shelljs.exec(`adb -s ${serial} shell getprop ro.build.version.release`).stdout.replace("\n", "").trim()
 				const webviewVersion = shelljs.exec(`adb -s ${serial}  shell dumpsys package com.android.chrome | grep versionName`)
-				.stdout.split("\n")[0]
-				.replace("versionName=","")
-				.match(/\d+\.\d+\.\d+/)[0]
-				
+					.stdout.split("\n")[0]
+					.replace("versionName=", "")
+					.match(/\d+\.\d+\.\d+/)[0]
+
 				this.resources[serial] = {
 					platform,
 					version: platformVersion,
@@ -241,11 +254,11 @@ export class node {
 					webviewVersion
 				}
 			}
-			
+
 			this.portMap[port] = "USED"
-			
+
 			Logger.info(`Add Device(Local) ${serial} to Port ${port}`)
-		} catch (e){
+		} catch (e) {
 			Logger.error(`Error while Add Device to Local. Removing ${serial}`)
 			Logger.error(e)
 			this.removeDevice(serial)
@@ -257,11 +270,11 @@ export class node {
 			Logger.info(`Starting Appium Server with Port:${port}`)
 			const appiumOptions = ["-p", `${port}`, "--webdriveragent-port", `${wdaPort}`, "--relaxed-security"]
 			const appium = cp.spawn("appium", appiumOptions, { detached: true })
-			
+
 			appium.stdout.on("data", (data) => {
 				Logger.info(data)
 			})
-		} catch(e) {
+		} catch (e) {
 			Logger.error(`Error while Add Device to Local. Removing ${serial}`)
 			Logger.error(e)
 			this.removeDevice(serial)
@@ -270,7 +283,7 @@ export class node {
 
 	private async addDeviceToServer(serial: string) {
 		const device = this.resources[serial]
-		
+
 		if (!device) {
 			Logger.error(`Trying to Add Device that are not registerd to local ${serial}`)
 			return

@@ -57,10 +57,11 @@ export interface DeviceGroupType {
 	name: string
 	controller_endpoint?: string
 	devices: string[]
-	enable_timer?: boolean
-
+	mode?: {
+		name: MODE_NAME,
+		option?: MODE_OPTIONS
+	}
 }
-
 export interface ResourceDictionaryType {
 	[serialNo: string]: ResourceType
 }
@@ -75,4 +76,25 @@ export enum BMS_CMD {
 	POWER_ON = "Power on",
 	POWER_OFF = "Power off",
 	POWER_TOGGLE = "Power toggle"
+}
+
+export enum MODE_NAME {
+	BATTERY_LEVEL = "battery_level",
+	TIMER = "timer",
+}
+
+export interface MODE_OPTIONS {
+	battery_level_status?: "on" | "off",
+	battery_level_threshold?: {
+		min: number,
+		max: number
+	}
+	timer_term?: number
+}
+
+export interface TimerState {
+	controller_name: String,
+	controller_endpoint?: String,
+	state: String,
+	timeout: object
 }

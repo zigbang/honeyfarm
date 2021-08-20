@@ -6,13 +6,13 @@ import { DeviceGroupType, ResourceDictionaryType, PairType } from "./util/types"
 import Timer from "./timer"
 export default class BMS {
 
-	private readonly SYNC_TERM: number = 10_000 //15 * 60 * 1000;	// 15min
+	private readonly SYNC_TERM: number = 15 * 60 * 1000;	// 15min
 	private readonly DEVICE_GROUP_PATH: string = "/conf/device_group.json";
 
 	private timer_handle_ = null;
 	private device_groups_: DeviceGroupType[] = [];
 	private batteryLevelRange_: PairType = { first: 10, second: 100 };
-	private timer: Timer
+	public timer: Timer
 
 	constructor() {
 		this.timer = new Timer(this.device_groups_);
