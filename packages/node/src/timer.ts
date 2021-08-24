@@ -78,7 +78,7 @@ export default class Timer {
 				if (true === this.enabled_timers_.hasOwnProperty(group.name)) {
 					//stop -> terminate loop 태우기.
 					let timer = this.enabled_timers_[group.name];
-					if (undefined !== timer && STATE.TERMINATE !== timer.state && STATE.SHUTTING_DOWN !== timer.state) {
+					if (false === [STATE.TERMINATE, STATE.SHUTTING_DOWN, undefined].includes(timer.state)) {
 						timer.state = STATE.STOP;
 					}
 				}
