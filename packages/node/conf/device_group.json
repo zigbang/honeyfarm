@@ -36,10 +36,16 @@
 		{
 			"is_bind_controller": false,
 			"name": "android local",
-			"controller_endpoint": "{Sonoff device's IP Address}",
+			"controller_endpoint": "http://192.168.0.100/",
 			"devices": [
 				"{Mobile Device #1's UDID}"
-			]
+			],
+			"mode": {
+				"name": "timer",
+				"option": {
+					"timer_term": 1
+				}
+			}
 		}
 	]
 }
