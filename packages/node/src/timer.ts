@@ -150,7 +150,7 @@ export default class Timer {
 		if (res && res.data && res.data.hasOwnProperty("POWER")) {
 			status = res.data.POWER
 			term = this.getTimerTerm(group.name)
-			if (null === term) {
+			if (null === term && false === [STATE.STOP, STATE.TERMINATE, STATE.SHUTTING_DOWN].includes(timerInfo.state)) {
 				Logger.error(`runTimer() - Timer mode or option arguments are missing. This timer(${group.name}) will be stopped.\n`)
 				timerInfo.state = STATE.STOP;
 				return;
