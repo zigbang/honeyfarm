@@ -1,5 +1,5 @@
 import Logger from "./logger"
-import { DeviceGroupType, BMS_CMD, TimerState } from "./util/types"
+import { DeviceGroupType, BMS_CMD, TimerState, MODE_NAME } from "./util/types"
 import BMS from "./bms"
 
 enum STATE {
@@ -38,18 +38,30 @@ export default class Timer {
 
 	private getTimerTerm(groupName: string) {
 		const dg = this.findDeviceGroup(groupName);
-		if (null !== dg && dg.hasOwnProperty("mode") && dg.mode.hasOwnProperty("option") && dg.mode.option.hasOwnProperty("timer_term")) {
+		if (null === dg || false === dg.hasOwnProperty("mode")) {
+			Logger.warn(`getTimerTerm(): mode is undefined in device_group.json. timer for ${groupName} would be end.`)
+			return null;
+		} else if (MODE_NAME.TIMER !== dg.mode.name) {
+			Logger.warn(`getTimerTerm(): mode.name is not "timer" in device_group.json. timer for ${groupName} would be end.`)
+			return null;
+		} else if (false === dg.mode.hasOwnProperty("option")) {
+			Logger.warn(`getTimerTerm(): mode.option is undefined. Instead, default term:${this.DEFAULT_CHARGE_TERM}(s) would be used.`)
+			return this.DEFAULT_CHARGE_TERM;
+		} else if (false === dg.mode.option.hasOwnProperty("timer_term")) {
+			Logger.warn(`getTimerTerm(): mode.option.timer_term is undefined. Instead, default term:${this.DEFAULT_CHARGE_TERM}(s) would be used.`)
+			return this.DEFAULT_CHARGE_TERM;
+		} else if (dg.mode.option.hasOwnProperty("timer_term")) {
 			let rawTerm = dg.mode.option.timer_term;
 			if (Number.isSafeInteger(rawTerm) && rawTerm >= 1 && rawTerm <= 10) {
 				//Logger.info(`timer.ts - getTimerTerm(): Timer term is set as ${rawTerm}(min) for "${groupName}".`)
 				return rawTerm * 60 * 60 * 1000;//(ms -> hour)
 			} else {
-				Logger.warn(`timer.ts - getTimerTerm(): ${rawTerm} is not safe integer(Float, too large or zero). Instead, default term:${this.DEFAULT_CHARGE_TERM}(s) would be used for "${groupName}".`)
+				Logger.warn(`getTimerTerm(): ${rawTerm} is not safe integer(Float, too large or zero). Instead, default term:${this.DEFAULT_CHARGE_TERM}(s) would be used for "${groupName}".`)
 				return this.DEFAULT_CHARGE_TERM;
 			}
 		} else {
-			Logger.warn(`timer.ts - getTimerTerm(): option.timer_term is undefined. Instead, default term:${this.DEFAULT_CHARGE_TERM}(s) would be used.`)
-			return this.DEFAULT_CHARGE_TERM;
+			Logger.warn(`getTimerTerm(): Invalid action - stop the timer for ${groupName}`)
+			return null;
 		}
 
 	}
@@ -66,7 +78,7 @@ export default class Timer {
 				if (true === this.enabled_timers_.hasOwnProperty(group.name)) {
 					//stop -> terminate loop 태우기.
 					let timer = this.enabled_timers_[group.name];
-					if (undefined !== timer && STATE.SHUTTING_DOWN !== timer.state) {
+					if (false === [STATE.TERMINATE, STATE.SHUTTING_DOWN, undefined].includes(timer.state)) {
 						timer.state = STATE.STOP;
 					}
 				}
@@ -94,19 +106,17 @@ export default class Timer {
 		timerEnabledGroupNames.forEach(gn => {
 			const deviceGroup = this.findDeviceGroup(gn)
 			if (null === deviceGroup) {
-				Logger.error(`clockTimers error: device group "${gn}" is not found.`)
-				//this.enabled_timers_[gn].state = STATE.ERROR
+				Logger.error(`clockTimers() - error: device group "${gn}" is not found.`)
 				delete this.enabled_timers_[gn]
 				return;
 			}
 			let state = this.enabled_timers_[gn].state
 			if (state === undefined) {
-				Logger.error(`clockTimers error: State of timer for ${gn} is undefined, so this timer would be removed from enabled_timers_`)
-				//this.enabled_timers_[gn].state = STATE.ERROR
+				Logger.error(`clockTimers() - error: State of timer for ${gn} is undefined, so this timer would be removed from enabled_timers_`)
 				delete this.enabled_timers_[gn]
 				return;
 			}
-			//Logger.info(`timer "${gn}": ${state}`)
+			Logger.info(`clockTimers() - timer "${gn}": ${state}`)
 			if (STATE.RUNNING === state || STATE.WAIT === state || STATE.SHUTTING_DOWN === state) {
 				// don`t add any task while running, waiting for error resolving
 			} else if (STATE.IDLE === state) {
@@ -137,14 +147,18 @@ export default class Timer {
 		timerInfo.state = STATE.WAIT
 		const res = await BMS.operateBatteryCommand(group.controller_endpoint, BMS_CMD.POWER_STATUS)
 
-
 		if (res && res.data && res.data.hasOwnProperty("POWER")) {
 			status = res.data.POWER
 			term = this.getTimerTerm(group.name)
+			if (null === term && false === [STATE.STOP, STATE.TERMINATE, STATE.SHUTTING_DOWN].includes(timerInfo.state)) {
+				Logger.error(`runTimer() - Timer mode or option arguments are missing. This timer(${group.name}) will be stopped.\n`)
+				timerInfo.state = STATE.STOP;
+				return;
+			}
 			//'OFF' === status ? this.DISCHARGE_TERM : this.CHARGE_TERM
 		} else {
-			if (timerInfo.state !== STATE.SHUTTING_DOWN) {
-				Logger.error(`Timer error during checking the power status for ${group.name}. This timer will be put into error cycle.\n`)
+			if (false === [STATE.STOP, STATE.TERMINATE, STATE.SHUTTING_DOWN].includes(timerInfo.state)) {
+				Logger.error(`runTimer() - Timer error during checking the power status for ${group.name}. This timer will be put into error cycle.\n`)
 				timerInfo.state = STATE.ERROR
 			}
 			return;
@@ -155,18 +169,19 @@ export default class Timer {
 				this.idleTimer(group.name);
 				timerInfo.state = STATE.IDLE
 			} else {
-				if (timerInfo.state !== STATE.SHUTTING_DOWN) {
-					Logger.error(`Timer error during power toggling for ${group.name}. This timer will be put into error cycle.\n`)
+				if (false === [STATE.STOP, STATE.TERMINATE, STATE.SHUTTING_DOWN].includes(timerInfo.state)) {
+					Logger.error(`runTimer() - Timer error during power toggling for ${group.name}. This timer will be put into error cycle.\n`)
 					timerInfo.state = STATE.ERROR
 				}
 			}
 		}, term)
+		Logger.info(`runTimer() - Timer for ${group.name} is set up.(${timerInfo.timeout})\n`)
 		timerInfo.state = STATE.RUNNING
 	}
 	private idleTimer(groupName: string) {
 		const timer = this.enabled_timers_[groupName]
 		if (undefined === timer) {
-			Logger.info(`The timer for ${groupName} have already deleted from the list "enabled_timers_".`);
+			Logger.info(`idleTimer() - The timer for ${groupName} have already deleted from the list "enabled_timers_".`);
 			return;
 		}
 		clearTimeout(timer.timeout)
@@ -175,14 +190,16 @@ export default class Timer {
 	}
 
 	private stopTimer(groupName: string) {
-		const timerInfo = this.enabled_timers_[groupName];
+		let timerInfo = this.enabled_timers_[groupName];
 		if (undefined === timerInfo) {
-			Logger.info(`The timer for ${groupName} is undefined in the object "enabled_timers_".`);
+			Logger.info(`stopTimer() - The timer for ${groupName} is undefined in the object "enabled_timers_".`);
 			return;
 		}
-		Logger.info(`STOPPING: ${timerInfo.timeout}`)
+		Logger.info(`stopTimer() - STOPPING: ${timerInfo.timeout}`)
+
 		clearTimeout(timerInfo.timeout)
 		delete timerInfo.timeout
+
 		timerInfo.state = STATE.TERMINATE
 		return;
 	}
@@ -193,10 +210,10 @@ export default class Timer {
 		timerInfo.state = STATE.SHUTTING_DOWN
 		const res = await BMS.operateBatteryCommand(group.controller_endpoint, BMS_CMD.POWER_ON)
 		if (res && res.data && res.data.hasOwnProperty("POWER")) {
-			Logger.info(`Successfully turned power on before timer for ${gn} terminated\n`)
+			Logger.info(`terminateTimer() - Successfully turned power on before timer for ${gn} terminated\n`)
 			delete this.enabled_timers_[gn]
 		} else {
-			Logger.error(`Failed to turn power on for "${gn}". It may need to be turned on manually, or the devices can be discharged. \n`)
+			Logger.error(`terminateTimer() - Failed to turn power on for "${gn}". It may need to be turned on manually, or the devices can be discharged. \n`)
 			// anyway, terminate this timer without any state change.
 			delete this.enabled_timers_[gn]
 		}
@@ -208,13 +225,13 @@ export default class Timer {
 		const gn = group.name;
 		const timerInfo = this.enabled_timers_[gn];
 		timerInfo.state = STATE.WAIT
-		Logger.warn(`After ${this.ERROR_WAIT_TERM}, timer for "${gn}" controller would be started. \n`)
+		Logger.warn(`handleErrorTimer() - After ${this.ERROR_WAIT_TERM}, timer for "${gn}" controller would be started. \n`)
 		if (timerInfo.timeout) {
 			clearTimeout(timerInfo.timeout)
 			delete timerInfo.timeout
 		}
 		timerInfo.timeout = setTimeout(() => {
-			Logger.warn(`Error wait time is done, and "${gn}" controller would be started. \n`)
+			Logger.warn(`handleErrorTimer() - Error wait time is done, and "${gn}" controller would be started. \n`)
 			clearTimeout(timerInfo.timeout)
 			delete timerInfo.timeout
 			this.enabled_timers_[gn].state = STATE.IDLE
@@ -234,7 +251,11 @@ export default class Timer {
 			rst.push({
 				controller_name: groupName,
 				state: this.enabled_timers_[groupName].state,
-				timeout: this.enabled_timers_[groupName].timeout ? this.enabled_timers_[groupName].timeout._idleTimeout : null,
+				timeout: this.enabled_timers_[groupName].timeout ?
+					{
+						_idleTimeout: this.enabled_timers_[groupName].timeout._idleTimeout,
+						_idleStart: this.enabled_timers_[groupName].timeout._idleStart
+					} : null,
 			})
 		})
 		return rst;
