@@ -25,13 +25,7 @@
 			"devices": [
 				"{Mobile Device #1's UDID}",
 				"{Mobile Device #2's UDID}"
-			],
-			"mode": {
-				"name": "timer",
-				"option": {
-					"timer_term": 2
-				}
-			}
+			]
 		},
 		{
 			"is_bind_controller": false,

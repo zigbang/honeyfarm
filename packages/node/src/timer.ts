@@ -19,9 +19,9 @@ export default class Timer {
 	private device_groups_: DeviceGroupType[] = [];
 	private device_groups_buffer: DeviceGroupType[] = [];
 
-	private readonly CLOCK_TERM = 15 * 60 * 1000 // 15m
-	private readonly DEFAULT_CHARGE_TERM = 120 * 60 * 1000; // 120m, 2h
-	private readonly ERROR_WAIT_TERM = 30 * 60 * 1000 // 30m
+	private readonly CLOCK_TERM = 10 * 1000 //15 * 60 * 1000 // 15m
+	private readonly DEFAULT_CHARGE_TERM = 20 * 1000 //120 * 60 * 1000; // 120m, 2h
+	private readonly ERROR_WAIT_TERM = 30 * 1000 // 30 * 60 * 1000 // 30m
 
 	constructor(device_groups: DeviceGroupType[]) {
 		this.set_device_groups_(device_groups);
@@ -42,7 +42,7 @@ export default class Timer {
 			let rawTerm = dg.mode.option.timer_term;
 			if (Number.isSafeInteger(rawTerm) && rawTerm >= 1 && rawTerm <= 10) {
 				//Logger.info(`timer.ts - getTimerTerm(): Timer term is set as ${rawTerm}(min) for "${groupName}".`)
-				return rawTerm * 60 * 60 * 1000;//(ms -> hour)
+				return rawTerm * 60 * 1000  //rawTerm * 60 * 60 * 1000;//(ms -> hour)
 			} else {
 				Logger.warn(`timer.ts - getTimerTerm(): ${rawTerm} is not safe integer(Float, too large or zero). Instead, default term:${this.DEFAULT_CHARGE_TERM}(s) would be used for "${groupName}".`)
 				return this.DEFAULT_CHARGE_TERM;
@@ -106,7 +106,7 @@ export default class Timer {
 				delete this.enabled_timers_[gn]
 				return;
 			}
-			//Logger.info(`timer "${gn}": ${state}`)
+			Logger.info(`timer "${gn}": ${state}`)
 			if (STATE.RUNNING === state || STATE.WAIT === state || STATE.SHUTTING_DOWN === state) {
 				// don`t add any task while running, waiting for error resolving
 			} else if (STATE.IDLE === state) {
@@ -137,7 +137,6 @@ export default class Timer {
 		timerInfo.state = STATE.WAIT
 		const res = await BMS.operateBatteryCommand(group.controller_endpoint, BMS_CMD.POWER_STATUS)
 
-
 		if (res && res.data && res.data.hasOwnProperty("POWER")) {
 			status = res.data.POWER
 			term = this.getTimerTerm(group.name)
@@ -161,6 +160,7 @@ export default class Timer {
 				}
 			}
 		}, term)
+		Logger.info(`Timer for ${group.name} is set up.(${timerInfo.timeout})\n`)
 		timerInfo.state = STATE.RUNNING
 	}
 	private idleTimer(groupName: string) {
