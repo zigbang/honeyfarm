@@ -30,10 +30,12 @@ export default class HoneyFramAPI {
 
 	public async registerDeviceStatus(port: string, platform: string, version: string, udid?: string, name?: string, wdaPort?: string, mjpegServerPort?: string, type?: string, batteryLevel?: number) {
 		try {
+			let portStr = port.toString();
+			let versionStr = version.toString();
 			await Axios.post(`${this.SERVER_ADDRESS}/register`, {
-				port,
+				portStr,
 				platform,
-				version,
+				versionStr,
 				udid,
 				name,
 				wdaPort,
@@ -56,8 +58,9 @@ export default class HoneyFramAPI {
 
 	public async deregisterDeviceStatus(port: string) {
 		try {
+			let portStr = port.toString();
 			await Axios.post(`${this.SERVER_ADDRESS}/deregister`, {
-				"port": port
+				"port": portStr
 			}, {
 				headers: {
 					"Content-Type": "application/json"
@@ -73,10 +76,12 @@ export default class HoneyFramAPI {
 
 	public async getDevice(port: string, platform: string, version: string, udid?: string): Promise<boolean> {
 		try {
+			let portStr = port.toString();
+			let versionStr = version.toString();
 			const result = await Axios.post(`${this.SERVER_ADDRESS}/device`, {
-				port,
+				portStr,
 				platform,
-				version,
+				versionStr,
 				udid,
 			})
 
