@@ -7,6 +7,7 @@ import API from "./api"
 import BMS from "./bms"
 import { ResourceType, PortStatus, IOSDeviceInfo, iPhone_TYPE } from "./util/types"
 
+import PortMapper from "./upnp";
 
 export class node {
 	private api: API
@@ -85,6 +86,9 @@ export class node {
 	}
 
 	private async updateDeviceStatus() {
+		await PortMapper.getExternalIp();
+		await PortMapper.getMappedPort();
+
 		const onlineSerials = await this.getOnlineSerials()
 		Logger.info(`Discovered Devices: ${JSON.stringify(onlineSerials)}`)
 
@@ -265,7 +269,7 @@ export class node {
 		}
 	}
 
-	private startAppiumServer(serial: string, port: string, wdaPort: string) {
+	private async startAppiumServer(serial: string, port: string, wdaPort: string) {
 		try {
 			Logger.info(`Starting Appium Server with Port:${port}`)
 			const appiumOptions = ["-p", `${port}`, "--webdriveragent-port", `${wdaPort}`, "--relaxed-security"]
@@ -273,7 +277,9 @@ export class node {
 
 			appium.stdout.on("data", (data) => {
 				Logger.info(data)
-			})
+			});
+
+			await PortMapper.addPortMapping(Number(port), 60 * 60 * 24 * 30);
 		} catch (e) {
 			Logger.error(`Error while Add Device to Local. Removing ${serial}`)
 			Logger.error(e)
@@ -310,7 +316,9 @@ export class node {
 			this.portMap[port] = "FREE"
 
 			const appiumPID = shelljs.exec(`lsof -n -i4TCP:${port} | grep node |  awk '{print $2}'`)
-			cp.exec(`kill -9 ${appiumPID}`)
+			cp.exec(`kill -9 ${appiumPID}`);
+
+			PortMapper.removePortMapping(Number(port));
 		} catch (e) {
 			Logger.error(e)
 		}
