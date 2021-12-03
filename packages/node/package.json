@@ -35,6 +35,7 @@
     "@types/nat-upnp": "^1.1.1",
     "axios": "^0.21.1",
     "commander": "5.1.0",
+    "daemon": "^1.1.0",
     "nat-upnp-2": "^3.0.3",
     "node-ios-device": "^1.9.2",
     "node-pty": "^0.9.0",

@@ -16,6 +16,7 @@ export class node {
 	private portMap: { [port: string]: PortStatus } = {}
 	private isMacMachine = false
 	private appiumDefaultPort = 4724
+	private useUPnP = false
 	private endpoint = "http://localhost:4723"
 	private readonly wdaDefaultPort = 8101
 	private readonly mjpegServerDefaultPort = 9101
@@ -28,9 +29,11 @@ export class node {
 		commander
 			.option('--endpoint <endpoint>', 'Setting endpoint')
 			.option('--appiumBeginPort <appiumBeginPort>', 'Setting appium Begin port')
+			.option('--upnp', 'Enable upnp mode')
 			.action(() => {
 				this.endpoint = commander.endpoint || this.endpoint
 				this.appiumDefaultPort = commander.appiumPort || this.appiumDefaultPort
+				this.useUPnP = commander.upnp || this.useUPnP
 			})
 			.parse(process.argv)
 
@@ -38,7 +41,6 @@ export class node {
 		this.bms = new BMS()
 
 		await this.init()
-
 		await this.updateDeviceStatus()
 
 		this.checkBatteryStatus()
@@ -86,8 +88,10 @@ export class node {
 	}
 
 	private async updateDeviceStatus() {
-		await PortMapper.getExternalIp();
-		await PortMapper.getMappedPort();
+		if(this.useUPnP) {
+			await PortMapper.getExternalIp();
+			await PortMapper.getMappedPort();
+		}
 
 		const onlineSerials = await this.getOnlineSerials()
 		Logger.info(`Discovered Devices: ${JSON.stringify(onlineSerials)}`)
@@ -279,7 +283,9 @@ export class node {
 				Logger.info(data)
 			});
 
-			await PortMapper.addPortMapping(Number(port), 60 * 60 * 24 * 30);
+			if(this.useUPnP) {
+				await PortMapper.addPortMapping(Number(port), 60 * 60 * 24 * 30);
+			}
 		} catch (e) {
 			Logger.error(`Error while Add Device to Local. Removing ${serial}`)
 			Logger.error(e)
@@ -318,7 +324,9 @@ export class node {
 			const appiumPID = shelljs.exec(`lsof -n -i4TCP:${port} | grep node |  awk '{print $2}'`)
 			cp.exec(`kill -9 ${appiumPID}`);
 
-			PortMapper.removePortMapping(Number(port));
+			if(this.useUPnP) {
+				PortMapper.removePortMapping(Number(port));
+			}
 		} catch (e) {
 			Logger.error(e)
 		}
