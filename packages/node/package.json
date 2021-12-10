@@ -18,7 +18,8 @@
     "dev": "npx ts-node src/dev.ts",
     "nodemon": "npx nodemon --config nodemon-dev.json",
     "build": "npx tsc",
-    "start": "node ./dist/app.js",
+    "start:dist": "node ./dist/app.js",
+    "start": "npx ts-node ./src/app.ts",
     "lint": "tslint --project .",
     "deploy": "npx ts-node src/lib/deploy.ts"
   },
