@@ -30,12 +30,10 @@ export default class HoneyFramAPI {
 
 	public async registerDeviceStatus(port: string, platform: string, version: string, udid?: string, name?: string, wdaPort?: string, mjpegServerPort?: string, type?: string, batteryLevel?: number) {
 		try {
-			let portStr = port.toString();
-			let versionStr = version.toString();
 			await Axios.post(`${this.SERVER_ADDRESS}/register`, {
-				port: portStr,
+				port: port.toString(),
 				platform,
-				version: versionStr,
+				version: version.toString(),
 				udid,
 				name,
 				wdaPort,
