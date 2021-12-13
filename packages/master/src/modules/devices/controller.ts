@@ -130,12 +130,10 @@ export class DevicesController {
 		//const rst = await this.batteryService.getBatteryControlInfo()
 		try { this.batteryService.updateBmsTimerStates(req.body) }
 		catch (e) {
-			res.status(400).send({ "result": "error", "message": e })
+			res.status(400).send({ "result_code": "fail", "description": "error occurred", "data": e })
 		}
-		res.status(200).send({ "result": "ok" })
+		res.status(200).send({ "result_code": "ok", "description": "Successfully update BMS Timer." })
 	}
-
-
 
 	private getClientAddr(req: Request) {
 		return req.headers["x-forwarded-for"] || req.connection.remoteAddress?.replace("::ffff:", "") || ""
