@@ -19,9 +19,9 @@ export default class Timer {
 	private device_groups_: DeviceGroupType[] = [];
 	private device_groups_buffer: DeviceGroupType[] = [];
 
-	private readonly CLOCK_TERM = 15 * 60 * 1000 // 15m
-	private readonly DEFAULT_CHARGE_TERM = 120 * 60 * 1000; // 120m, 2h
-	private readonly ERROR_WAIT_TERM = 30 * 60 * 1000 // 30m
+	private readonly CLOCK_TERM = 15 * 60 * 10 // 15m
+	private readonly DEFAULT_CHARGE_TERM = 120 * 60 * 10; // 120m, 2h
+	private readonly ERROR_WAIT_TERM = 30 * 60 * 10 // 30m
 
 	constructor(device_groups: DeviceGroupType[]) {
 		this.set_device_groups_(device_groups);

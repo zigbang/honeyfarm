@@ -22,7 +22,7 @@ export class node {
 	private readonly mjpegServerDefaultPort = 9101
 	private iosDevice = undefined
 	private bms: BMS
-	private readonly CHECK_BATTERY_TERM = 5 * 60 * 1000  // 5min
+	private readonly CHECK_BATTERY_TERM = 5 * 60 * 10//00  // 5min
 
 	async run() {
 		shelljs.config.silent = true
@@ -88,7 +88,7 @@ export class node {
 	}
 
 	private async updateDeviceStatus() {
-		if(this.useUPnP) {
+		if (this.useUPnP) {
 			await PortMapper.getExternalIp();
 			await PortMapper.getMappedPort();
 		}
@@ -144,12 +144,12 @@ export class node {
 
 	private async updateBmsTimerStates() {
 		const rst = await this.api.postBmsTimerState(this.bms.timer.get_enabled_timers_())
-		if (rst && rst.hasOwnProperty("result") && 'ok' === rst.result) {
+		if (rst && 'ok' === rst.result_code) {
 			//success
 			// Logger.info(`BMS timer status is updated.`)
 		}
 		else {
-			Logger.warn(`Fail to update BMS timer status: ${rst}`)
+			Logger.warn(`Fail to update BMS timer status: ${JSON.stringify(rst)}`)
 		}
 	}
 
@@ -283,7 +283,7 @@ export class node {
 				Logger.info(data)
 			});
 
-			if(this.useUPnP) {
+			if (this.useUPnP) {
 				await PortMapper.addPortMapping(Number(port), 60 * 60 * 24 * 30);
 			}
 		} catch (e) {
@@ -324,7 +324,7 @@ export class node {
 			const appiumPID = shelljs.exec(`lsof -n -i4TCP:${port} | grep node |  awk '{print $2}'`)
 			cp.exec(`kill -9 ${appiumPID}`);
 
-			if(this.useUPnP) {
+			if (this.useUPnP) {
 				PortMapper.removePortMapping(Number(port));
 			}
 		} catch (e) {
