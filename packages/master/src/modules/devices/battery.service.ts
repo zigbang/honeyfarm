@@ -105,6 +105,7 @@ export class BatteryService {
 			Logger.error(`Fail to assign timerStates in updateBmsTimerStates(): ${e}`)
 			throw e
 		}
+		return this.timerStates
 	}
 	public getBmsTimerStates() {
 		return { timers: [...this.timerStates] }
