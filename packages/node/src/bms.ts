@@ -6,7 +6,7 @@ import { DeviceGroupType, ResourceDictionaryType, PairType } from "./util/types"
 import Timer from "./timer"
 export default class BMS {
 
-	private readonly SYNC_TERM: number = 15 * 60 * 10//00;	// 15min
+	private readonly SYNC_TERM: number = 15 * 60 * 1000;	// 15min
 	private readonly DEVICE_GROUP_PATH: string = "/conf/device_group.json";
 
 	private timer_handle_ = null;

@@ -22,7 +22,7 @@ export class node {
 	private readonly mjpegServerDefaultPort = 9101
 	private iosDevice = undefined
 	private bms: BMS
-	private readonly CHECK_BATTERY_TERM = 5 * 60 * 10//00  // 5min
+	private readonly CHECK_BATTERY_TERM = 5 * 60 * 1000  // 5min
 
 	async run() {
 		shelljs.config.silent = true
