@@ -36,9 +36,3 @@ export interface BatteryConfig {
 		min?: number
 	}
 }
-
-export interface responseBodyTemplate {
-	result_code: "ok" | "fail",
-	description: string,
-	data: Array<any>
-}
