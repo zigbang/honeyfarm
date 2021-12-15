@@ -12,14 +12,16 @@ export default class HoneyFramAPI {
 	}
 
 	public async updateDeviceStatus(port: string, stat) {
-
+		let rst;
 		try {
-			await Axios.put(`${this.SERVER_ADDRESS}/update`, { port, ...stat }, {
+			rst = await Axios.put(`${this.SERVER_ADDRESS}/update`, { port, ...stat }, {
 				headers: {
 					"Content-Type": "application/json"
 				}
 			})
-
+			if ('ok' !== rst.data.result_code) {
+				throw new Error(`updateDeviceStatus(): Failed/\n\t${JSON.stringify(rst.data)}`)
+			}
 			return true
 		} catch (e) {
 			Logger.error(`Cannot Put: ${this.SERVER_ADDRESS}/update`)
@@ -29,8 +31,9 @@ export default class HoneyFramAPI {
 	}
 
 	public async registerDeviceStatus(port: string, platform: string, version: string, udid?: string, name?: string, wdaPort?: string, mjpegServerPort?: string, type?: string, batteryLevel?: number) {
+		let rst;
 		try {
-			await Axios.post(`${this.SERVER_ADDRESS}/register`, {
+			rst = await Axios.post(`${this.SERVER_ADDRESS}/register`, {
 				port: port.toString(),
 				platform,
 				version: version.toString(),
@@ -45,7 +48,9 @@ export default class HoneyFramAPI {
 					"Content-Type": "application/json"
 				}
 			})
-
+			if ('ok' !== rst.data.result_code) {
+				throw new Error(`registerDeviceStatus(): Failed/\n\t${JSON.stringify(rst.data)}`)
+			}
 			return true
 		} catch (e) {
 			Logger.error(`Cannot Post: ${this.SERVER_ADDRESS}/register`)
@@ -55,15 +60,20 @@ export default class HoneyFramAPI {
 	}
 
 	public async deregisterDeviceStatus(port: string) {
+		let rst;
 		try {
 			let portStr = port.toString();
-			await Axios.post(`${this.SERVER_ADDRESS}/deregister`, {
+			rst = await Axios.post(`${this.SERVER_ADDRESS}/deregister`, {
 				port: portStr
 			}, {
 				headers: {
 					"Content-Type": "application/json"
 				}
 			})
+			if ('ok' !== rst.data.result_code) {
+				throw new Error(`deregisterDeviceStatus(): Failed/\n\t${JSON.stringify(rst.data)}`)
+			}
+
 			return true
 		} catch (e) {
 			Logger.error(`Cannot Post: ${this.SERVER_ADDRESS}/deregister`)
@@ -73,17 +83,20 @@ export default class HoneyFramAPI {
 	}
 
 	public async getDevice(port: string, platform: string, version: string, udid?: string): Promise<boolean> {
+		let rst;
 		try {
 			let portStr = port.toString();
 			let versionStr = version.toString();
-			const result = await Axios.post(`${this.SERVER_ADDRESS}/device`, {
+			rst = await Axios.post(`${this.SERVER_ADDRESS}/device`, {
 				port: portStr,
 				platform,
 				version: versionStr,
 				udid,
 			})
-
-			return result.data as boolean
+			if ('ok' !== rst.data.result_code) {
+				throw new Error(`getDevice(): Failed/\n\t${JSON.stringify(rst.data)}`)
+			}
+			return true;
 		} catch (e) {
 			Logger.error(`Cannot Post: ${this.SERVER_ADDRESS}/device`)
 			Logger.error(e)
@@ -93,22 +106,28 @@ export default class HoneyFramAPI {
 
 	public async getBatteryChargeRule() {
 		try {
-			const result = await Axios.get(`${this.SERVER_ADDRESS}/battery`)
-			return result.data
+			const rst = await Axios.get(`${this.SERVER_ADDRESS}/bms/info`)
+			if ('ok' !== rst.data.result_code) {
+				throw new Error(`updateDeviceStatus(): Failed/\n\t${JSON.stringify(rst.data)}`)
+			}
+			return rst.data.data[0]
 		}
 		catch (e) {
-			Logger.error(`Cannot Post: ${this.SERVER_ADDRESS}/battery`)
+			Logger.error(`Cannot Get: ${this.SERVER_ADDRESS}/bms/info`)
 			Logger.error(e)
 		}
 	}
 
 	public async postBmsTimerState(timerStates: TimerState[]) {
 		try {
-			//console.log(timerStates)
-			const result = await Axios.post(`${this.SERVER_ADDRESS}/bms/timer`, {
+			const rst = await Axios.post(`${this.SERVER_ADDRESS}/bms/timer`, {
 				timerStates: timerStates
 			})
-			return result.data
+			if ('ok' !== rst.data.result_code) {
+				throw new Error(`updateDeviceStatus(): Failed/\n\t${JSON.stringify(rst.data)}`)
+			}
+			// console.log(rst.data)
+			return rst.data
 		}
 		catch (e) {
 			Logger.error(`Cannot Post: ${this.SERVER_ADDRESS}/bms/timer`)
