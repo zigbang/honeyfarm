@@ -32,7 +32,7 @@ export class node {
 			.option('--upnp', 'Enable upnp mode')
 			.action(() => {
 				this.endpoint = commander.endpoint || this.endpoint
-				this.appiumDefaultPort = commander.appiumBeginPort || this.appiumDefaultPort
+				this.appiumDefaultPort = Number.parseInt(commander.appiumBeginPort) || this.appiumDefaultPort
 				this.useUPnP = commander.upnp || this.useUPnP
 			})
 			.parse(process.argv)

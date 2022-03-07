@@ -8,7 +8,7 @@ export class deploy {
 
         //node build
         shelljs.exec("yarn build")
-        
+
         //ws build
         process.chdir(os.tmpdir())
 
@@ -17,7 +17,7 @@ export class deploy {
         } else {
             shelljs.exec("git clone https://github.com/NetrisTV/ws-scrcpy.git")
         }
-        
+
         shelljs.exec("cd ws-scrcpy && yarn && yarn dist")
 
         //copy ws dist
