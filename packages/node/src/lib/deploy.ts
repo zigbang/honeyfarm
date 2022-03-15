@@ -5,7 +5,6 @@ import os from "os"
 export class deploy {
     run() {
         const curruentPath = process.cwd()
-
         //node build
         shelljs.exec("yarn build")
 
@@ -18,7 +17,7 @@ export class deploy {
             shelljs.exec("git clone https://github.com/NetrisTV/ws-scrcpy.git")
         }
 
-        shelljs.exec("cd ws-scrcpy && yarn && yarn dist")
+        shelljs.exec("cd ws-scrcpy && npm install && npm run dist")
 
         //copy ws dist
         shelljs.cp("-fr", "./ws-scrcpy/dist/public", `${curruentPath}/dist`)
@@ -26,7 +25,7 @@ export class deploy {
 
         // npm publish
         process.chdir(curruentPath)
-        shelljs.exec("npm publish")
+        shelljs.exec("npm publish --@zigbang:registry=https://registry.npmjs.org")
 
     }
 }
