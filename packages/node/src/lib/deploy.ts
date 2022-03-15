@@ -6,7 +6,7 @@ export class deploy {
     run() {
         const curruentPath = process.cwd()
         //node build
-        shelljs.exec("yarn build")
+        shelljs.exec("npm run build")
 
         //ws build
         process.chdir(os.tmpdir())
@@ -26,7 +26,6 @@ export class deploy {
         // npm publish
         process.chdir(curruentPath)
         shelljs.exec("npm publish --@zigbang:registry=https://registry.npmjs.org")
-
     }
 }
 
