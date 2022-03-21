@@ -259,6 +259,7 @@ export class node {
 					platform,
 					version: platformVersion,
 					port,
+					wdaPort: `${wdaPort}`,
 					webviewVersion
 				}
 			}
